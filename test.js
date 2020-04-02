@@ -1,11 +1,15 @@
-const { gitCommand } = require('./src/git')
+const fs = require('fs')
 
 process.env['GITHUB_WORKSPACE']  = __dirname
 
-function test(callback, ...params) {
-    callback(params[0], params[1]).then((res) => {
-        console.log(res)
-    })
-}
+const simpleGit = require('./src/git')
 
-test(gitCommand, 'status', { filepath: 'package.json' })
+process.env['GITHUB_WORKSPACE']  = __dirname
+
+
+simpleGit.diff((res) => {
+    console.log(res)
+})
+
+let res = fs.statSync('images/123.png')
+console.log(res)
