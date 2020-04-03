@@ -121,21 +121,21 @@ class Qiniu {
 
       this.bucketManager.batch(moveOperations, function(err, respBody, respInfo) {
         if (err) {
-          console.log(err);
+          core.error(err);
           //throw err;
         } else {
           // 200 is success, 298 is part success
           if (parseInt(respInfo.statusCode / 100) == 2) {
             respBody.forEach(function(item) {
               if (item.code == 200) {
-                console.log(item.code + "\tsuccess");
+                core.info(item.code + "\tsuccess");
               } else {
-                console.log(item.code + "\t" + item.data.error);
+                core.error(item.code + "\t" + item.data.error);
               }
             });
           } else {
-            console.log(respInfo.deleteusCode);
-            console.log(respBody);
+            core.info(respInfo.deleteusCode);
+            core.info(respBody);
           }
         }
       })
