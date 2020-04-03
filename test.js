@@ -42,6 +42,9 @@ async function test() {
     }
 
     // 删除
+    const dels = op.D
+    qiniu.batchDelFiles(dels.map(fs => (filename(fs))))
+    
 }
 
 test()

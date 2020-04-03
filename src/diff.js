@@ -13,7 +13,13 @@ async function diff() {
     await exec('git config --global core.quotepath false')
     
     await exec(`git add ${globPath}`)
-    const { stdout } = await exec(`git diff --raw HEAD  -- ${globPath}`)
+
+    const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
+
+    // 判断目标目录里是否改动
+    let command = `git diff --raw ${ std1.length ? 'HEAD' : 'HEAD^1' }  -- ${globPath}`
+
+    const { stdout } = await exec(command)
 
     const lines = stdout.match(/.*\n/mg) || []
 

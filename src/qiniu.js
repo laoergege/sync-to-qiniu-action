@@ -74,12 +74,16 @@ class Qiniu {
         })
     }
 
-    deleteFile() {
-        const deleteOperations = []
+    batchDelFiles(keys = []) {
+        if (!Array.isArray(keys) || keys.length === 0) {
+          return
+        }
+
+        const deleteOperations = keys.map((key) => (qiniu.rs.deleteOp(this.bucket, key)))
 
         this.bucketManager.batch(deleteOperations, function(err, respBody, respInfo) {
             if (err) {
-              console.log(err);
+              core.error(err);
               //throw err;
             } else {
               // 200 is success, 298 is part success
