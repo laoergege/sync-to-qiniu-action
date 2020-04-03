@@ -26,7 +26,8 @@
   "dependencies": {
     "@actions/core": "^1.1.1",
     "qiniu": "^7.3.0",
-    "simple-git": "^1.132.0"
+    "simple-git": "^1.132.0",
+    "urlencode": "^1.1.0"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.20.5",

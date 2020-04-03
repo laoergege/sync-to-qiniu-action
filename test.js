@@ -1,6 +1,7 @@
 const Quniu = require('./src/qiniu')
 const { filename } = require('./src/utils')
 const path = require('path')
+const urlencode = require('urlencode');
 
 // input
 process.env['INPUT_FOLDERPATH'] = 'images'
@@ -30,8 +31,8 @@ async function test() {
     }
 
     for (let index = 0; index < summary.length; index++) {
-        const [ status, of, nf ] = summary[index];
-        op[status].push([of, nf])
+        const [ status, o, d ] = summary[index];
+        op[status].push([o, d])
     }
 
     // 新增
@@ -43,7 +44,7 @@ async function test() {
 
     // 删除
     const dels = op.D
-    qiniu.batchDelFiles(dels.map(fs => (filename(fs))))
+    qiniu.batchDelFiles(dels.map(fs => (encodeURI(filename(fs[0])))))
     
 }
 
