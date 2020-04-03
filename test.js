@@ -1,7 +1,6 @@
 const Quniu = require('./src/qiniu')
 const { filename } = require('./src/utils')
 const path = require('path')
-const urlencode = require('urlencode');
 
 // input
 process.env['INPUT_FOLDERPATH'] = 'images'
