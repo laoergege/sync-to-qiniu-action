@@ -44,7 +44,7 @@ async function test() {
 
     // 删除
     const dels = op.D
-    qiniu.batchDelFiles(dels.map(fs => (encodeURI(filename(fs[0])))))
+    qiniu.batchDelFiles(dels.map(fs => (filename(fs[0]))))
     
 }
 
