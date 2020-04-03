@@ -46,6 +46,9 @@ async function test() {
     const dels = op.D
     qiniu.batchDelFiles(dels.map(fs => (filename(fs[0]))))
     
+    // 重命名
+    const renames = op.R
+    qiniu.batchMVFiles(renames.map(fs => (filename(fs[0]))))
 }
 
 test()

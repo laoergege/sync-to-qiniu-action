@@ -7,7 +7,7 @@ class Qiniu {
      * 构建 Qiniu 实例
      * @param {*} accessKey 
      * @param {*} secretKey 
-     * @param {*} bucket 上传空间
+     * @param {*} bucket 默认上传空间
      * @param {*} zone 服务地区 Zone_z0：华东, Zone_z1: 华北, Zone_z2: 华南, Zone_na0: 北美
      */
     constructor(accessKey, secretKey, bucket, zone) {
@@ -74,6 +74,7 @@ class Qiniu {
         })
     }
 
+    // 删除文件
     batchDelFiles(keys = []) {
         if (!Array.isArray(keys) || keys.length === 0) {
           return
@@ -101,6 +102,43 @@ class Qiniu {
               }
             }
           });
+    }
+
+    /**
+     * 批量移动或者重命名文件
+     * @param {[ [src, dest] ]} keys o: 源文件名， dest: 新文件名
+     */
+    batchMVFiles(keys = []) {
+      if (!Array.isArray(keys) || keys.length === 0) {
+        return
+      }
+
+      //每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+      var moveOperations = keys.map(key => {
+        const [src, dest] = key
+        return qiniu.rs.moveOp(this.bucket, src, this.bucket, dest)
+      });
+
+      this.bucketManager.batch(moveOperations, function(err, respBody, respInfo) {
+        if (err) {
+          console.log(err);
+          //throw err;
+        } else {
+          // 200 is success, 298 is part success
+          if (parseInt(respInfo.statusCode / 100) == 2) {
+            respBody.forEach(function(item) {
+              if (item.code == 200) {
+                console.log(item.code + "\tsuccess");
+              } else {
+                console.log(item.code + "\t" + item.data.error);
+              }
+            });
+          } else {
+            console.log(respInfo.deleteusCode);
+            console.log(respBody);
+          }
+        }
+      })
     }
 }
 

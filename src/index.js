@@ -1,8 +1,6 @@
 const core = require('@actions/core');
 const { getUpToken } = require('./qiniu')
 
-
-
 // most @actions toolkit packages have async methods
 async function run() {
   try { 
