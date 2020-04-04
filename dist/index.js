@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(104);
+/******/ 		return __webpack_require__(676);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -50,31 +50,54 @@ module.exports = require("os");
 
 /***/ }),
 
-/***/ 104:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+/***/ 136:
+/***/ (function(module, __unusedexports, __webpack_require__) {
 
-const core = __webpack_require__(470);
-const wait = __webpack_require__(949);
+const core = __webpack_require__(470)
 
-
-// most @actions toolkit packages have async methods
-async function run() {
-  try { 
-    const ms = core.getInput('milliseconds');
-    console.log(`Waiting ${ms} milliseconds ...`)
-
-    core.debug((new Date()).toTimeString())
-    wait(parseInt(ms));
-    core.debug((new Date()).toTimeString())
-
-    core.setOutput('time', new Date().toTimeString());
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
+/**
+ * 获取 GITHUB_WORKSPACE 变量前先使用  @actions/checkout，否则为空
+ * 请 https://help.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables 
+ */
+function getWorkspace() {
+    let githubWorkspacePath = process.env['GITHUB_WORKSPACE']
+    if (!githubWorkspacePath) {
+        throw new Error('GITHUB_WORKSPACE not defined, please use @actions/checkout before use me')
+    }
+    return githubWorkspacePath
 }
 
-run()
+function getInput() {
+    return {
+        accessKey: core.getInput('accessKey'),
+        secretKey: core.getInput('secretKey'),
+        bucket: core.getInput('bucket'),
+        zone: core.getInput('zone'),
+        folderPath: core.getInput('folderPath'),
+        fsizeLimit: core.getInput('fsizeLimit'),
+        mimeLimit: core.getInput('folderPath')
+    }
+}
+
+module.exports = {
+    getWorkspace,
+    getInput,
+}
+
+/***/ }),
+
+/***/ 335:
+/***/ (function() {
+
+eval("require")("./src/diff");
+
+
+/***/ }),
+
+/***/ 393:
+/***/ (function() {
+
+eval("require")("./src/qiniu");
 
 
 /***/ }),
@@ -343,20 +366,64 @@ module.exports = require("path");
 
 /***/ }),
 
-/***/ 949:
-/***/ (function(module) {
+/***/ 676:
+/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-let wait = function(milliseconds) {
-  return new Promise((resolve, reject) => {
-    if (typeof(milliseconds) !== 'number') { 
-      throw new Error('milleseconds not a number'); 
-    }
+const path = __webpack_require__(622)
+const core = __webpack_require__(470);
+const diff = __webpack_require__(335)
+const Quniu = __webpack_require__(393)
+const { getInput, getWorkspace } = __webpack_require__(136)
 
-    setTimeout(() => resolve("done!"), milliseconds)
-  });
+async function run() {
+  const githubWorkspacePath = getWorkspace()
+  if (process.cwd() !== githubWorkspacePath) {
+    core.setFailed(1)
+  }
+
+  const { accessKey, secretKey, bucket, zone,
+    fsizeLimit, mimeLimit } = getInput()
+
+  const qiniu = new Quniu(accessKey, secretKey, bucket, zone, {
+    fsizeLimit,
+    mimeLimit
+  })
+
+  const summary = await diff()
+
+  const op = {
+    A: [],
+    D: [],
+    M: [],
+    R: []
+  }
+
+  for (let index = 0; index < summary.length; index++) {
+    const [status, o, d] = summary[index];
+    op[status].push([o, d])
+  }
+
+  const adds = op.A
+  for (let index = 0; index < adds.length; index++) {
+    const [fs] = adds[index];
+    qiniu.uploadFile(fs, path.resolve(githubWorkspacePath, fs))
+  }
+
+  const dels = op.D
+  qiniu.batchDelFiles(dels)
+
+  const renames = op.R
+  qiniu.batchMVFiles(renames)
+
+  const modifies = op.M
+  qiniu.batchUpFiles(modifies)
 }
 
-module.exports = wait;
+if (core.getState("isPost")) {
+  run()
+} else {
+  core.saveState("isPost", true);
+}
 
 
 /***/ })
