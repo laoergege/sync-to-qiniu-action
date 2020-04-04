@@ -1,7 +1,7 @@
 const path = require('path')
 const core = require('@actions/core');
-const diff = require('./src/diff')
-const Quniu = require('./src/qiniu')
+const diff = require('./diff')
+const Quniu = require('./qiniu')
 const { getInput, getWorkspace } = require('./input-helper')
 
 async function run() {
