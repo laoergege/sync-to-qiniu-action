@@ -1,14 +1,30 @@
 name: 'sync-to-qiniu-action'
-description: 'Wait a designated number of milliseconds'
+description: 'Synchronize the contents of your folder to qiniu'
 inputs:
+  accessKey:
+    description: 'qiniu accessKey'
+    required: true
+  secretKey: 
+    description: 'qiniu secretKey'
+    required: true
+  bucket:
+    description: 'qiniu bucket'
+    required: true
+  zone:
+    description: 'bucket zone'
+    required: true
   folderPath:
     description: 'The folder which will sync to the qiniu'
     required: true
   fsizeLimit:
     description: 'Maximum upload file size limit(byte)'
-    default: 1 * 1024 * 1024 #默认 1M
+    default: 5 * 1024 * 1024 #默认 5M
   mimeLimit:
     description: 'File MimeType'
 runs:
   using: 'node12'
   main: 'dist/index.js'
+  post: 'dist/index.js'
+branding:
+  icon: 'upload-cloud',
+  color: 'blue'

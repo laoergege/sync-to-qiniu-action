@@ -9,15 +9,16 @@ class Qiniu {
      * @param {*} secretKey 
      * @param {*} bucket 默认上传空间
      * @param {*} zone 服务地区 Zone_z0：华东, Zone_z1: 华北, Zone_z2: 华南, Zone_na0: 北美
+     * @param {*} policy 上传策略参数 通过不同参数来满足不同的业务需求，可以灵活地组织你所需要的上传凭证 参考 https://developer.qiniu.com/kodo/manual/1206/put-policy
      */
-    constructor(accessKey, secretKey, bucket, zone) {
+    constructor(accessKey, secretKey, bucket, zone, policy) {
         this.accessKey = accessKey
         this.secretKey = secretKey
         this.bucket = bucket 
 
         this.mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
 
-        this.setToken()
+        this.setToken(policy)
 
         this.config = new qiniu.conf.Config()
         this.config.zone = qiniu.zone[zone];
@@ -74,18 +75,62 @@ class Qiniu {
         })
     }
 
-    // 删除文件
-    batchDelFiles(keys = []) {
-        if (!Array.isArray(keys) || keys.length === 0) {
+    /**
+     * 删除文件
+     * @param {string} path 
+     */
+    deleteFile(path) {
+      return new Promise((resolve, reject) => {
+        this.bucketManager.delete(this.bucket, path, function(err, respBody, respInfo) {
+          if (err) {
+            core.error(err);
+            reject(err)
+          } else {
+            core.info(respInfo.statusCode);
+            core.info(respBody);
+            resolve()
+          }
+        });
+      })
+    }
+
+    /**
+     * 批量上传文件
+     * @param {Array<string>} paths path 文件路径数组
+     */
+    async batchUploadFiles(paths) {
+      if (!Array.isArray(paths) || paths.length === 0) {
+        return
+      }
+
+      for (let index = 0; index < paths.length; index++) {
+        const path = paths[index]
+        core.info(`${path} is uploading...`)
+        try {
+          await this.uploadFile(path, path)
+        } catch (error) {
+          core.error(`${path} upload failed，please manually upload again`)
+          core.error(error)
+        }
+      }
+    }
+
+    /**
+     * 批量删除文件
+     * @param {Array<string>} paths 文件名数组, length 不可以超过1000个，如果总数量超过1000，需要分批发送
+     */
+    batchDelFiles(paths = []) {
+        if (!Array.isArray(paths) || paths.length === 0) {
           return
         }
 
-        const deleteOperations = keys.map((key) => (qiniu.rs.deleteOp(this.bucket, key)))
+        const deleteOperations = paths.map((key) => (qiniu.rs.deleteOp(this.bucket, key)))
 
-        this.bucketManager.batch(deleteOperations, function(err, respBody, respInfo) {
+        return new Promise((resolve, reject) => {
+          this.bucketManager.batch(deleteOperations, function(err, respBody, respInfo) {
             if (err) {
               core.error(err);
-              //throw err;
+              reject(err)
             } else {
               // 200 is success, 298 is part success
               if (parseInt(respInfo.statusCode / 100) == 2) {
@@ -93,52 +138,78 @@ class Qiniu {
                   if (item.code == 200) {
                     core.info(item.code + "\tsuccess");
                   } else {
-                    core.error(item.code + "\t" + item.data.error);
+                    core.info(item.code + "\t" + item.data.error);
                   }
                 });
               } else {
-                core.info(respInfo.deleteusCode)
-                core.info(respBody)
+                core.warning(respInfo.deleteusCode)
+                core.warning(respBody)
               }
+              resolve()
             }
           });
+        })
     }
 
     /**
      * 批量移动或者重命名文件
-     * @param {[ [src, dest] ]} keys o: 源文件名， dest: 新文件名
+     * @param {Array<[src: string, dst: string]>} paths o: 源文件名， dest: 新文件名, length 不可以超过1000个，如果总数量超过1000，需要分批发送
      */
-    batchMVFiles(keys = []) {
-      if (!Array.isArray(keys) || keys.length === 0) {
+    batchMVFiles(paths = []) {
+      if (!Array.isArray(paths) || paths.length === 0) {
         return
       }
 
-      //每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
-      var moveOperations = keys.map(key => {
+      var moveOperations = paths.map(key => {
         const [src, dest] = key
         return qiniu.rs.moveOp(this.bucket, src, this.bucket, dest)
       });
 
-      this.bucketManager.batch(moveOperations, function(err, respBody, respInfo) {
-        if (err) {
-          core.error(err);
-          //throw err;
-        } else {
-          // 200 is success, 298 is part success
-          if (parseInt(respInfo.statusCode / 100) == 2) {
-            respBody.forEach(function(item) {
-              if (item.code == 200) {
-                core.info(item.code + "\tsuccess");
-              } else {
-                core.error(item.code + "\t" + item.data.error);
-              }
-            });
+      return new Promise((resolve, reject) => {
+        this.bucketManager.batch(moveOperations, function(err, respBody, respInfo) {
+          if (err) {
+            core.error(err);
+            reject(err)
           } else {
-            core.info(respInfo.deleteusCode);
-            core.info(respBody);
+            // 200 is success, 298 is part success
+            if (parseInt(respInfo.statusCode / 100) == 2) {
+              respBody.forEach(function(item) {
+                if (item.code == 200) {
+                  core.info(item.code + "\tsuccess");
+                } else {
+                  core.error(item.code + "\t" + item.data.error);
+                }
+              });
+            } else {
+              core.warning(respInfo.deleteusCode);
+              core.warning(respBody);
+            }
+            resolve()
           }
-        }
+        })
       })
+    }
+    
+    /**
+     * 批量更新文件
+     * @param {Array<string>} paths 文件路径数组
+     */
+    async batchUpFiles(paths) {
+      if (!Array.isArray(paths) || paths.length === 0) {
+        return
+      } 
+
+      for (let index = 0; index < paths.length; index++) {
+        const path = paths[index];
+        try {
+          await this.deleteFile(path) // 删除旧文件
+          await this.uploadFile(path, path) // 重新上传新文件
+        } catch (error) {
+          core.error(`${path} update failed`)
+          core.error(error)
+          continue
+        }
+      }
     }
 }
 

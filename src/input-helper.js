@@ -14,6 +14,10 @@ function getWorkspace() {
 
 function getInput() {
     return {
+        accessKey: core.getInput('accessKey'),
+        secretKey: core.getInput('secretKey'),
+        bucket: core.getInput('bucket'),
+        zone: core.getInput('zone'),
         folderPath: core.getInput('folderPath'),
         fsizeLimit: core.getInput('fsizeLimit'),
         mimeLimit: core.getInput('folderPath')
@@ -22,5 +26,5 @@ function getInput() {
 
 module.exports = {
     getWorkspace,
-    getInput
+    getInput,
 }

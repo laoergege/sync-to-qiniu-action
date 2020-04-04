@@ -1,32 +1,31 @@
+const path = require('path')
 const core = require('@actions/core');
-const { getUpToken } = require('./qiniu')
+const diff = require('./src/diff')
 const Quniu = require('./src/qiniu')
-const { filename } = require('./src/utils')
+const { getInput, getWorkspace } = require('./input-helper')
 
-// most @actions toolkit packages have async methods
 async function run() {
-  // 秘钥
-  const accessKey = 'QttzDFHUD4UN3cfL2pEG6hR2GEIWnqPRXJygKWXe'
-  const secretKey = '08RMz4b7lLpJ-LpcfGRKJDwjaI6dhzFvkVvsm4vI'
-  // 上传空间
-  const bucket = 'laoergege-blog-images'
+  const githubWorkspacePath = getWorkspace()
+  if (process.cwd() !== githubWorkspacePath) {
+    core.setFailed(1)
+  }
+
+  const { accessKey, secretKey, bucket, zone,
+    fsizeLimit, mimeLimit } = getInput()
 
   try {
-    const qiniu = new Quniu(accessKey, secretKey, bucket, 'Zone_z2')
-
-    const diff = require('./src/diff')
+    const qiniu = new Quniu(accessKey, secretKey, bucket, zone, {
+      fsizeLimit,
+      mimeLimit
+    })
 
     const summary = await diff()
 
     const op = {
       A: [],
-      C: [],
       D: [],
       M: [],
-      R: [],
-      T: [],
-      U: [],
-      X: []
+      R: []
     }
 
     for (let index = 0; index < summary.length; index++) {
@@ -38,20 +37,24 @@ async function run() {
     const adds = op.A
     for (let index = 0; index < adds.length; index++) {
       const [fs] = adds[index];
-      qiniu.uploadFile(filename(fs), path.resolve(__dirname, fs))
+      qiniu.uploadFile(fs, path.resolve(__dirname, fs))
     }
 
     // 删除
     const dels = op.D
-    qiniu.batchDelFiles(dels.map(fs => (filename(fs[0]))))
+    qiniu.batchDelFiles(dels.map(fs => fs))
 
     // 重命名
     const renames = op.R
-    qiniu.batchMVFiles(renames.map(fs => (filename(fs[0]))))
+    qiniu.batchMVFiles(renames.map(fs => fs))
   }
   catch (error) {
     core.setFailed(error.message);
   }
 }
 
-run()
+if (core.getState("isPost")) {
+  run() 
+} else {
+  core.saveState("isPost", true);
+}

@@ -1,7 +1,8 @@
 {
-  "name": "javascript-action",
-  "version": "1.0.0",
-  "description": "JavaScript Action Template",
+  "name": "sync-to-qiniu-action",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Synchronize the contents of your folder to qiniu",
   "main": "./dist/index.js",
   "scripts": {
     "lint": "eslint index.js",
@@ -15,7 +16,8 @@
   "keywords": [
     "GitHub",
     "Actions",
-    "JavaScript"
+    "JavaScript",
+    "Qiniu"
   ],
   "author": "GitHub",
   "license": "MIT",
