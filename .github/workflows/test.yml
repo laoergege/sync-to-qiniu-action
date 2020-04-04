@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v2
       with: 
         token: ${{ secrets.token }}
-    - uses: ../
+    - uses: ./
       with:
         accessKey: ${{ secrets.accessKey }}
         secretKey: ${{ secrets.secretKey }}
