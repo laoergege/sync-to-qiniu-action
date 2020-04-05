@@ -40459,6 +40459,11 @@ async function run() {
   const { accessKey, secretKey, bucket, zone,
     fsizeLimit, mimeLimit } = getInput()
 
+  core.info(accessKey)
+  core.info(secretKey)
+  core.info(bucket)
+  core.info(zone)
+
   const qiniu = new Quniu(accessKey, secretKey, bucket, zone, {
     fsizeLimit,
     mimeLimit
