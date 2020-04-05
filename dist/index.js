@@ -9675,7 +9675,7 @@ function getInput() {
         zone: core.getInput('zone'),
         folderPath: core.getInput('folderPath'),
         fsizeLimit: core.getInput('fsizeLimit'),
-        mimeLimit: core.getInput('folderPath')
+        mimeLimit: core.getInput('mimeLimit')
     }
 }
 
@@ -40459,10 +40459,18 @@ async function run() {
   const { accessKey, secretKey, bucket, zone,
     fsizeLimit, mimeLimit } = getInput()
 
-  const qiniu = new Quniu(accessKey, secretKey, bucket, zone, {
-    fsizeLimit: fsizeLimit ? Number(fsizeLimit) : null,
+  const policy = {
+    fsizeLimit: Number(fsizeLimit),
     mimeLimit
+  }
+
+  Object.keys(policy).map((key) => {
+    if (!policy[key]) {
+      delete policy[key]
+    }
   })
+
+  const qiniu = new Quniu(accessKey, secretKey, bucket, zone, policy)
 
   const summary = await diff()
 

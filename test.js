@@ -21,10 +21,20 @@ async function run() {
   const { accessKey, secretKey, bucket, zone,
     fsizeLimit, mimeLimit } = getInput()
 
-  const qiniu = new Quniu(accessKey, secretKey, bucket, zone, {
-    fsizeLimit,
+  const policy = {
+    fsizeLimit: Number(fsizeLimit),
     mimeLimit
+  }
+
+  Object.keys(policy).map((key) => {
+    if (!policy[key]) {
+      delete policy[key]
+    }
   })
+
+  console.log(policy)
+
+  const qiniu = new Quniu(accessKey, secretKey, bucket, zone, policy)
 
   const summary = await diff()
 
@@ -41,7 +51,7 @@ async function run() {
   }
 
   const adds = op.A
-  qiniu.batchUploadFiles(adds.map(([path]) => (path)))
+  qiniu.batchUploadFiles(adds.map(([p]) => ([p, path.resolve(githubWorkspacePath, p)])))
 
   const dels = op.D
   qiniu.batchDelFiles(dels.map(([path]) => (path)))

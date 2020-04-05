@@ -20,7 +20,7 @@ function getInput() {
         zone: core.getInput('zone'),
         folderPath: core.getInput('folderPath'),
         fsizeLimit: core.getInput('fsizeLimit'),
-        mimeLimit: core.getInput('folderPath')
+        mimeLimit: core.getInput('mimeLimit')
     }
 }
 
