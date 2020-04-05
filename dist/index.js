@@ -29480,10 +29480,14 @@ async function diff() {
 
         const lines = stdout.match(/.+$/gm) || []
 
+        console.log(lines)
+
         const summary = lines.map((line) => (line.split(/\s/).slice(4))).map((row) => {
             row[0] = row[0].replace(/\d/g, '')
             return row
         })
+
+        console.log(summary)
 
         return summary
     } catch (err) {
