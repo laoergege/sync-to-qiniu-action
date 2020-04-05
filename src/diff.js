@@ -32,8 +32,9 @@ async function diff() {
 
         return summary
     } catch (error) {
-        core.error(error)
+        console.log(JSON.stringify(error))
         core.setFailed(1)
+        throw(error)
     }
 }
 
