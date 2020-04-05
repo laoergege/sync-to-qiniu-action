@@ -40475,6 +40475,7 @@ async function run() {
   const qiniu = new Quniu(accessKey, secretKey, bucket, zone, policy)
 
   const summary = await diff()
+  console.log(summary)
 
   const op = {
     A: [],
@@ -49482,9 +49483,9 @@ class Qiniu {
               if (parseInt(respInfo.statusCode / 100) == 2) {
                 respBody.forEach(function(item, i) {
                   if (item.code == 200) {
-                    core.info(`${paths[i]}\titem.code\tsuccess`);
+                    core.info(`delete ${paths[i]}\t${item.code}\tsuccess`);
                   } else {
-                    core.info(`${paths[i]}\titem.code\t${item.data.error}`);
+                    core.info(`delete ${paths[i]}\t${item.code}\t${item.data.error}`);
                   }
                 });
               } else {
