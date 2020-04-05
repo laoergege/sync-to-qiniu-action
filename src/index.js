@@ -33,7 +33,7 @@ async function run() {
   }
 
   const adds = op.A
-  qiniu.batchUploadFiles(adds.map(([path]) => (path)))
+  qiniu.batchUploadFiles(adds.map(([p]) => ([p, path.resolve(githubWorkspacePath, p)])))
 
   const dels = op.D
   qiniu.batchDelFiles(dels.map(([path]) => (path)))

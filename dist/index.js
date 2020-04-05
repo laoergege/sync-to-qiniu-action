@@ -40479,7 +40479,7 @@ async function run() {
   }
 
   const adds = op.A
-  qiniu.batchUploadFiles(adds.map(([path]) => (path)))
+  qiniu.batchUploadFiles(adds.map(([p]) => ([p, path.resolve(githubWorkspacePath, p)])))
 
   const dels = op.D
   qiniu.batchDelFiles(dels.map(([path]) => (path)))
@@ -49437,13 +49437,13 @@ class Qiniu {
       }
 
       for (let index = 0; index < paths.length; index++) {
-        const path = paths[index]
-        core.info(`${path} is uploading...`)
+        const [key, path] = paths[index]
+        core.info(`${key} is uploading...`)
         try {
-          await this.uploadFile(path, path)
-          core.info(`${path} uploaded successfully`)
+          await this.uploadFile(key, path)
+          core.info(`${key} uploaded successfully`)
         } catch (error) {
-          core.error(`${path} upload failed，please manually upload again`)
+          core.error(`${key} upload failed，please manually upload again`)
           core.error(stringify(error))
         }
         continue
