@@ -33,13 +33,10 @@ async function run() {
   }
 
   const adds = op.A
-  for (let index = 0; index < adds.length; index++) {
-    const [fs] = adds[index];
-    qiniu.uploadFile(fs, path.resolve(githubWorkspacePath, fs))
-  }
+  qiniu.batchUploadFiles(adds.map(([path]) => (path)))
 
   const dels = op.D
-  qiniu.batchDelFiles(dels)
+  qiniu.batchDelFiles(dels.map(([path]) => (path)))
 
   const renames = op.R
   qiniu.batchMVFiles(renames)

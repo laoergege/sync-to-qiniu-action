@@ -1,14 +1,14 @@
 const path = require('path')
 
-process.env.accessKey = 'QttzDFHUD4UN3cfL2pEG6hR2GEIWnqPRXJygKWXe'
-process.env.secretKey = '08RMz4b7lLpJ-LpcfGRKJDwjaI6dhzFvkVvsm4vI'
-process.env.bucket = 'laoergege-blog-images'
-process.env.zone = 'Zone_z2'
-process.env.folderPath = path.resolve(__dirname, './images')
-
+process.env['INPUT_accessKey'] = 'QttzDFHUD4UN3cfL2pEG6hR2GEIWnqPRXJygKWXe'
+process.env['INPUT_secretKey'] = '08RMz4b7lLpJ-LpcfGRKJDwjaI6dhzFvkVvsm4vI'
+process.env['INPUT_bucket'] = 'laoergege-blog-images'
+process.env['INPUT_zone'] = 'Zone_z2'
+process.env['INPUT_folderPath'] = 'images'
+process.env['GITHUB_WORKSPACE'] = __dirname
 
 const core = require('@actions/core');
-const diff = require('./src/diff')``
+const diff = require('./src/diff')
 const Quniu = require('./src/qiniu')
 const { getInput, getWorkspace } = require('./src/input-helper')
 
@@ -41,13 +41,10 @@ async function run() {
   }
 
   const adds = op.A
-  for (let index = 0; index < adds.length; index++) {
-    const [fs] = adds[index];
-    qiniu.uploadFile(fs, path.resolve(githubWorkspacePath, fs))
-  }
+  qiniu.batchUploadFiles(adds.map(([path]) => (path)))
 
   const dels = op.D
-  qiniu.batchDelFiles(dels)
+  qiniu.batchDelFiles(dels.map(([path]) => (path)))
 
   const renames = op.R
   qiniu.batchMVFiles(renames)
@@ -56,8 +53,4 @@ async function run() {
   qiniu.batchUpFiles(modifies)
 }
 
-if (core.getState("isPost")) {
-  run()
-} else {
-  core.saveState("isPost", true);
-}
+run()

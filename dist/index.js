@@ -29357,7 +29357,18 @@ module.exports = setup;
 
 
 /***/ }),
-/* 543 */,
+/* 543 */
+/***/ (function(module) {
+
+function stringify(obj) {
+    return JSON.stringify(obj)
+}
+
+module.exports = {
+    stringify
+}
+
+/***/ }),
 /* 544 */,
 /* 545 */,
 /* 546 */
@@ -40468,13 +40479,10 @@ async function run() {
   }
 
   const adds = op.A
-  for (let index = 0; index < adds.length; index++) {
-    const [fs] = adds[index];
-    qiniu.uploadFile(fs, path.resolve(githubWorkspacePath, fs))
-  }
+  qiniu.batchUploadFiles(adds.map(([path]) => (path)))
 
   const dels = op.D
-  qiniu.batchDelFiles(dels)
+  qiniu.batchDelFiles(dels.map(([path]) => (path)))
 
   const renames = op.R
   qiniu.batchMVFiles(renames)
@@ -49324,6 +49332,7 @@ function sleep(ms) {
 
 const qiniu = __webpack_require__(161)
 const core = __webpack_require__(470);
+const { stringify } = __webpack_require__(543)
 
 class Qiniu {
 
@@ -49407,7 +49416,7 @@ class Qiniu {
       return new Promise((resolve, reject) => {
         this.bucketManager.delete(this.bucket, path, function(err, respBody, respInfo) {
           if (err) {
-            core.error(err);
+            core.error(stringify(err));
             reject(err)
           } else {
             core.info(respInfo.statusCode);
@@ -49432,10 +49441,12 @@ class Qiniu {
         core.info(`${path} is uploading...`)
         try {
           await this.uploadFile(path, path)
+          core.info(`${path} uploaded successfully`)
         } catch (error) {
           core.error(`${path} upload failed，please manually upload again`)
-          core.error(error)
+          core.error(stringify(error))
         }
+        continue
       }
     }
 
@@ -49453,7 +49464,7 @@ class Qiniu {
         return new Promise((resolve, reject) => {
           this.bucketManager.batch(deleteOperations, function(err, respBody, respInfo) {
             if (err) {
-              core.error(err);
+              core.error((err));
               reject(err)
             } else {
               // 200 is success, 298 is part success
@@ -49492,7 +49503,7 @@ class Qiniu {
       return new Promise((resolve, reject) => {
         this.bucketManager.batch(moveOperations, function(err, respBody, respInfo) {
           if (err) {
-            core.error(err);
+            core.error(stringify(err));
             reject(err)
           } else {
             // 200 is success, 298 is part success
@@ -49524,13 +49535,13 @@ class Qiniu {
       } 
 
       for (let index = 0; index < paths.length; index++) {
-        const path = paths[index];
+        const [src, dest] = paths[index];
         try {
-          await this.deleteFile(path) // 删除旧文件
-          await this.uploadFile(path, path) // 重新上传新文件
+          await this.deleteFile(src) // 删除旧文件
+          await this.uploadFile(dest, dest) // 重新上传新文件
         } catch (error) {
-          core.error(`${path} update failed`)
-          core.error(error)
+          core.error(`${dest} update failed`)
+          core.error(stringify(error))
           continue
         }
       }
