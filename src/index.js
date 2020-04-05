@@ -51,5 +51,5 @@ async function run() {
 if (core.getState("isPost")) {
   run()
 } else {
-  core.saveState("isPost", true);
+  core.saveState("isPost", '1');
 }
