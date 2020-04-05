@@ -11,6 +11,7 @@ jobs:
     - uses: actions/checkout@v2
       with: 
         token: ${{ secrets.token }}
+        fetch-depth: 2
     - uses: ./
       with:
         accessKey: ${{ secrets.accessKey }}

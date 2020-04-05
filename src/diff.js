@@ -31,10 +31,12 @@ async function diff() {
         })
 
         return summary
-    } catch (error) {
-        console.log(JSON.stringify(error))
+    } catch ({ stderr }) {
+        if (stderr.includes("fatal: bad revision 'HEAD^1'")) {
+            core.error('please set fetch-depth of the "actions/checkout" config, eg. fetch-depth: 2')
+        }
         core.setFailed(1)
-        throw(error)
+        throw(stderr)
     }
 }
 
