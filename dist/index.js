@@ -29444,33 +29444,39 @@ exports.exists = function (filename, callback) {
 const { getInput } = __webpack_require__(136)
 const childProcess = __webpack_require__(129);
 const util = __webpack_require__(669);
+const core = __webpack_require__(470)
 
 const exec = util.promisify(childProcess.exec);
 
 async function diff() {
     const { folderPath } = getInput()
     const globPath = `${folderPath}/**`
-    
+
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
-    
+
     await exec(`git add ${globPath}`)
 
     const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
 
     // 判断目标目录里是否改动
-    let command = `git diff --raw ${ std1.length ? 'HEAD' : 'HEAD^1' }  -- ${globPath}`
+    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD^1'}  -- ${globPath}`
 
-    const { stdout } = await exec(command)
+    try {
+        const { stdout } = await exec(command)
 
-    const lines = stdout.match(/.*\n/mg) || []
+        const lines = stdout.match(/.*\n/mg) || []
 
-    const summary = lines.map((line) => (line.split(/\s/).slice(4))).map((row) => {
-        row[0] = row[0].replace(/\d/g, '')
-        return row
-    })
+        const summary = lines.map((line) => (line.split(/\s/).slice(4))).map((row) => {
+            row[0] = row[0].replace(/\d/g, '')
+            return row
+        })
 
-    return summary
+        return summary
+    } catch (error) {
+        core.error(error)
+        core.setFailed(1)
+    }
 }
 
 module.exports = diff
