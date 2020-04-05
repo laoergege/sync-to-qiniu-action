@@ -32,8 +32,6 @@ async function run() {
     }
   })
 
-  console.log(policy)
-
   const qiniu = new Quniu(accessKey, secretKey, bucket, zone, policy)
 
   const summary = await diff()

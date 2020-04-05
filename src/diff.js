@@ -18,7 +18,7 @@ async function diff() {
     const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
 
     // 判断目标目录里是否改动
-    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD^1'}  -- ${globPath}`
+    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD~1'}  -- ${globPath}`
 
     try {
         const { stdout } = await exec(command)
@@ -31,11 +31,11 @@ async function diff() {
         })
 
         return summary
-    } catch ({ stderr }) {
-        if (stderr.includes("fatal: bad revision 'HEAD^1'")) {
+    } catch (err) {
+        const { stderr } = err
+        if (stderr.includes("fatal: bad revision")) {
             core.error('please set fetch-depth of the "actions/checkout" config, eg. fetch-depth: 2')
         }
-        core.setFailed(1)
         throw(stderr)
     }
 }
