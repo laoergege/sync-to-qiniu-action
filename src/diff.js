@@ -27,6 +27,8 @@ async function diff() {
 
         const lines = stdout.match(/.*\n/mg) || []
 
+        console.log(lines)
+
         const summary = lines.map((line) => (line.split(/\s/).slice(4))).map((row) => {
             row[0] = row[0].replace(/\d/g, '')
             return row
