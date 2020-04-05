@@ -29478,9 +29478,7 @@ async function diff() {
     try {
         const { stdout } = await exec(command)
 
-        const lines = stdout.match(/.*\n/mg) || []
-
-        console.log(lines)
+        const lines = stdout.match(/.+$/gm) || []
 
         const summary = lines.map((line) => (line.split(/\s/).slice(4))).map((row) => {
             row[0] = row[0].replace(/\d/g, '')
