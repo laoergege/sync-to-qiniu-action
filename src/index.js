@@ -10,17 +10,11 @@ async function run() {
     core.setFailed(1)
   }
 
-  const { accessKey, secretKey, bucket, zone, folderPath,
+  const { accessKey, secretKey, bucket, zone,
     fsizeLimit, mimeLimit } = getInput()
 
-  core.info(accessKey)
-  core.info(secretKey)
-  core.info(bucket)
-  core.info(fsizeLimit)
-  core.info(folderPath)
-
   const qiniu = new Quniu(accessKey, secretKey, bucket, zone, {
-    fsizeLimit,
+    fsizeLimit: fsizeLimit ? Number(fsizeLimit) : null,
     mimeLimit
   })
 
