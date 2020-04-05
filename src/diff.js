@@ -20,6 +20,8 @@ async function diff() {
     // 判断目标目录里是否改动
     let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD~1'}  -- ${globPath}`
 
+    console.log(command)
+
     try {
         const { stdout } = await exec(command)
 
