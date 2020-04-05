@@ -40490,6 +40490,7 @@ async function run() {
   qiniu.batchUploadFiles(adds.map(([p]) => ([p, path.resolve(githubWorkspacePath, p)])))
 
   const dels = op.D
+  console.log(JSON.stringify(dels))
   qiniu.batchDelFiles(dels.map(([path]) => (path)))
 
   const renames = op.R
