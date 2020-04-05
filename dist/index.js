@@ -29471,7 +29471,7 @@ async function diff() {
     const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
 
     // 判断目标目录里是否改动
-    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD~1'}  -- ${globPath}`
+    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD^1'}  -- ${globPath}`
 
     console.log(command)
 
