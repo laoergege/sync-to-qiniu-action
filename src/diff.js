@@ -25,6 +25,8 @@ async function diff() {
     try {
         const { stdout } = await exec(command)
 
+        console.log(stdout)
+
         const lines = stdout.match(/.+$/gm) || []
 
         console.log(lines)
