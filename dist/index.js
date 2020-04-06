@@ -49528,11 +49528,11 @@ class Qiniu {
           } else {
             // 200 is success, 298 is part success
             if (parseInt(respInfo.statusCode / 100) == 2) {
-              respBody.forEach(function(item) {
+              respBody.forEach(function(item, i) {
                 if (item.code == 200) {
-                  core.info(item.code + "\tsuccess");
+                  core.info(`rename ${paths[i]}\t${item.code}\tsuccess`);
                 } else {
-                  core.error(item.code + "\t" + item.data.error);
+                  core.info(`rename ${paths[i]}\t${item.code}\t${item.data.error}`);
                 }
               });
             } else {
