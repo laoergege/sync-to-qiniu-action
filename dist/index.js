@@ -40508,7 +40508,7 @@ async function run() {
   qiniu.batchMVFiles(renames)
 
   const modifies = op.M
-  qiniu.batchUpFiles(modifies)
+  qiniu.batchUpFiles(modifies.map(([path]) => (path)))
 }
 
 if (core.getState("isPost")) {
@@ -49555,12 +49555,13 @@ class Qiniu {
       } 
 
       for (let index = 0; index < paths.length; index++) {
-        const [src, dest] = paths[index];
+        const path = paths[index];
         try {
-          await this.deleteFile(src) // 删除旧文件
-          await this.uploadFile(dest, dest) // 重新上传新文件
+          await this.deleteFile(path) // 删除旧文件
+          await this.uploadFile(path, path) // 重新上传新文件
+          core.error(`${path} uploaded successfully`)
         } catch (error) {
-          core.error(`${dest} update failed`)
+          core.error(`${path} update failed`)
           core.error(stringify(error))
           continue
         }

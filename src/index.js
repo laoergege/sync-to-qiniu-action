@@ -50,7 +50,7 @@ async function run() {
   qiniu.batchMVFiles(renames)
 
   const modifies = op.M
-  qiniu.batchUpFiles(modifies)
+  qiniu.batchUpFiles(modifies.map(([path]) => (path)))
 }
 
 if (core.getState("isPost")) {
