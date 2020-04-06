@@ -29458,21 +29458,30 @@ const util = __webpack_require__(669);
 const core = __webpack_require__(470)
 const { getWorkspace } = __webpack_require__(136)
 
-const exec = util.promisify(childProcess.exec);
+const { githubWorkspacePath } = getWorkspace()
+
+const exec = (function () {
+    const _exec = util.promisify(childProcess.exec)
+    return function (command) {
+        return _exec(command,  {
+            cwd: githubWorkspacePath
+        })
+    }
+})()
 
 async function diff() {
     const { folderPath } = getInput()
-    const { githubWorkspacePath } = getWorkspace()
     const globPath = `${folderPath}/**`
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
-    await exec(`git add ${globPath}`)
+    await exec(`git add ${globPath}`).catch(() => {
+        core.info(`There are not change in ${folderPath}`)
+    })
 
     const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
 
-    console.log( await exec(`git diff --raw HEAD^1`))
     console.log( await exec(`git diff --raw HEAD~1`))
 
     // 判断目标目录里是否改动
@@ -29481,9 +29490,7 @@ async function diff() {
     console.log(command)
 
     try {
-        const { stdout } = await exec(command, {
-            cwd: githubWorkspacePath
-        })
+        const { stdout } = await exec(command)
 
         console.log(stdout)
 
