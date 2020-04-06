@@ -55,8 +55,9 @@ async function run() {
   qiniu.batchUpFiles(modifies)
 }
 
-if (core.getState("isPost")) {
-  run()
-} else {
-  core.saveState("isPost", '1');
-}
+run()
+// if (core.getState("isPost")) {
+//   run()
+// } else {
+//   core.saveState("isPost", '1');
+// }
