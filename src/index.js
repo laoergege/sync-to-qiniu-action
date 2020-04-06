@@ -6,9 +6,6 @@ const { getInput, getWorkspace } = require('./input-helper')
 
 async function run() {
   const githubWorkspacePath = getWorkspace()
-  if (process.cwd() !== githubWorkspacePath) {
-    core.setFailed(1)
-  }
 
   const { accessKey, secretKey, bucket, zone,
     fsizeLimit, mimeLimit } = getInput()

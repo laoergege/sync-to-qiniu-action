@@ -40464,9 +40464,6 @@ const { getInput, getWorkspace } = __webpack_require__(136)
 
 async function run() {
   const githubWorkspacePath = getWorkspace()
-  if (process.cwd() !== githubWorkspacePath) {
-    core.setFailed(1)
-  }
 
   const { accessKey, secretKey, bucket, zone,
     fsizeLimit, mimeLimit } = getInput()
@@ -49416,13 +49413,12 @@ class Qiniu {
             formUploader.putFile(this.token, key, filePath, putExtra, function (respErr,
                 respBody, respInfo) {
                 if (respErr) {
-                    reject(respErr);
+                  reject(respErr);
                 }
                 if (respInfo.statusCode == 200) {
-                    resolve(respBody);
+                  resolve({ respBody, respInfo });
                 } else {
-                    core.info(respInfo.statusCode);
-                    core.info(respBody);
+                  reject({ respBody, respInfo });
                 }
             });
         })
@@ -49436,12 +49432,9 @@ class Qiniu {
       return new Promise((resolve, reject) => {
         this.bucketManager.delete(this.bucket, path, function(err, respBody, respInfo) {
           if (err) {
-            core.error(stringify(err));
             reject(err)
           } else {
-            core.info(respInfo.statusCode);
-            core.info(respBody);
-            resolve()
+            resolve({ respBody, respInfo })
           }
         });
       })
@@ -49559,11 +49552,10 @@ class Qiniu {
         try {
           await this.deleteFile(path) // 删除旧文件
           await this.uploadFile(path, path) // 重新上传新文件
-          core.info(`${path} uploaded successfully`)
+          core.info(`${path} updated successfully`)
         } catch (error) {
           core.error(`${path} update failed`)
           core.error(stringify(error))
-          continue
         }
       }
     }
