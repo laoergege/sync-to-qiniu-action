@@ -49559,7 +49559,7 @@ class Qiniu {
         try {
           await this.deleteFile(path) // 删除旧文件
           await this.uploadFile(path, path) // 重新上传新文件
-          core.error(`${path} uploaded successfully`)
+          core.info(`${path} uploaded successfully`)
         } catch (error) {
           core.error(`${path} update failed`)
           core.error(stringify(error))
