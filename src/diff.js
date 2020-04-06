@@ -23,7 +23,7 @@ async function diff() {
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
-    await exec(`git add ${globPath}`).catch(() => {
+    await exec(`git add '${globPath}'`).catch(() => {
         core.info(`There are not change in ${folderPath}`)
     })
 
