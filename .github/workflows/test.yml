@@ -19,4 +19,4 @@ jobs:
         bucket: 'laoergege-blog-images'
         zone: 'Zone_z2'
         folderPath: images
-        mimeLimit: 'image/*' 
+        # mimeLimit: 'image/*' 
