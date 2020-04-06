@@ -3,7 +3,7 @@ const { getInput } = require('./input-helper')
 const childProcess = require('child_process');
 const util = require('util');
 const core = require('@actions/core')
-const { getWorkspace } = require('./src/input-helper')
+const { getWorkspace } = require('./input-helper')
 
 const exec = util.promisify(childProcess.exec);
 

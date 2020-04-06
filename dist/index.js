@@ -607,13 +607,7 @@ module.exports = {
 module.exports = require("tls");
 
 /***/ }),
-/* 17 */
-/***/ (function() {
-
-eval("require")("./src/input-helper");
-
-
-/***/ }),
+/* 17 */,
 /* 18 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -29462,7 +29456,7 @@ const { getInput } = __webpack_require__(136)
 const childProcess = __webpack_require__(129);
 const util = __webpack_require__(669);
 const core = __webpack_require__(470)
-const { getWorkspace } = __webpack_require__(17)
+const { getWorkspace } = __webpack_require__(136)
 
 const exec = util.promisify(childProcess.exec);
 
