@@ -29486,7 +29486,7 @@ async function diff() {
     console.log( await exec(`git diff --raw HEAD~1 -- images/**`))
 
     // 判断目标目录里是否改动
-    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD~1'} -- ${globPath}`
+    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD~1'} -- '${globPath}'`
 
     console.log(command)
 
