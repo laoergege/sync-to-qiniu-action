@@ -607,7 +607,13 @@ module.exports = {
 module.exports = require("tls");
 
 /***/ }),
-/* 17 */,
+/* 17 */
+/***/ (function() {
+
+eval("require")("./src/input-helper");
+
+
+/***/ }),
 /* 18 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -29456,11 +29462,13 @@ const { getInput } = __webpack_require__(136)
 const childProcess = __webpack_require__(129);
 const util = __webpack_require__(669);
 const core = __webpack_require__(470)
+const { getWorkspace } = __webpack_require__(17)
 
 const exec = util.promisify(childProcess.exec);
 
 async function diff() {
     const { folderPath } = getInput()
+    const { githubWorkspacePath } = getWorkspace()
     const globPath = `${folderPath}/**`
 
     // 禁止 git 中文文件名编码
@@ -29476,7 +29484,9 @@ async function diff() {
     console.log(command)
 
     try {
-        const { stdout } = await exec(command)
+        const { stdout } = await exec(command, {
+            cwd: githubWorkspacePath
+        })
 
         console.log(stdout)
 

@@ -3,11 +3,13 @@ const { getInput } = require('./input-helper')
 const childProcess = require('child_process');
 const util = require('util');
 const core = require('@actions/core')
+const { getWorkspace } = require('./src/input-helper')
 
 const exec = util.promisify(childProcess.exec);
 
 async function diff() {
     const { folderPath } = getInput()
+    const { githubWorkspacePath } = getWorkspace()
     const globPath = `${folderPath}/**`
 
     // 禁止 git 中文文件名编码
@@ -23,7 +25,9 @@ async function diff() {
     console.log(command)
 
     try {
-        const { stdout } = await exec(command)
+        const { stdout } = await exec(command, {
+            cwd: githubWorkspacePath
+        })
 
         console.log(stdout)
 
