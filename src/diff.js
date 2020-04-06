@@ -22,8 +22,6 @@ async function diff() {
 
     console.log(command)
 
-    console.log(await exec('pwd'))
-
     try {
         const { stdout } = await exec(command)
 
