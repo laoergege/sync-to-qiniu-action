@@ -20,11 +20,6 @@ async function diff() {
     const { folderPath } = getInput()
     const globPath = `${folderPath}/**`
 
-    // 测试 reflog 功能
-    console.log('测试 reflog 功能')
-    const { stdout: std } = await exec('git reflog')
-    console.log(std)
-
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
