@@ -22,7 +22,7 @@ async function diff() {
 
     // 测试 reflog 功能
     console.log('测试 reflog 功能')
-    const { stdout: std } = await exec('git log')
+    const { stdout: std } = await exec('git reflog')
     console.log(std)
 
     // 禁止 git 中文文件名编码
