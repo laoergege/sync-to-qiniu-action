@@ -42,6 +42,7 @@ async function diff() {
 
         let sinceDate = dayjs(run2['created_at']).subtract(1, 'date').toISOString()
         console.log(await exec(`git fetch --shallow-since=${sinceDate} origin master`))
+        console.log(await exec(`git log -n 3`))
 
         command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
     }
