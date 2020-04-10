@@ -9748,9 +9748,14 @@ function getInput() {
     }
 }
 
+const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/')
+
 module.exports = {
     getWorkspace,
     getInput,
+    workflowID: process.env['GITHUB_RUN_ID'],
+    owner, 
+    repo 
 }
 
 /***/ }),
@@ -55031,7 +55036,7 @@ function get (parsed, opts, fn) {
 /* 790 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { getInput } = __webpack_require__(136)
+const { getInput, workflowID, owner, repo  } = __webpack_require__(136)
 const github = __webpack_require__(469);
 
 const { token } = getInput()
@@ -55040,9 +55045,11 @@ const client = new github.GitHub(token);
 
 function listRepoWorkflows() {
     return client.actions.listWorkflowRuns({
-        owner: 'laoergege',
-        repo: 'sync-to-qiniu-action',
-        workflow_id: '905030'
+        owner,
+        repo,
+        workflow_id: workflowID,
+        per_page: 5,
+        page: 1
     })
 }
 
