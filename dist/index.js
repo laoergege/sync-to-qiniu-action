@@ -9753,7 +9753,6 @@ const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/')
 module.exports = {
     getWorkspace,
     getInput,
-    workflowID: process.env['GITHUB_RUN_ID'],
     owner, 
     repo 
 }
@@ -55036,7 +55035,7 @@ function get (parsed, opts, fn) {
 /* 790 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { getInput, workflowID, owner, repo  } = __webpack_require__(136)
+const { getInput, owner, repo  } = __webpack_require__(136)
 const github = __webpack_require__(469);
 
 const { token } = getInput()
@@ -55044,10 +55043,9 @@ const { token } = getInput()
 const client = new github.GitHub(token);
 
 function listRepoWorkflows() {
-    return client.actions.listWorkflowRuns({
+    return client.actions.listRepoWorkflowRuns({
         owner,
         repo,
-        workflow_id: 'test',
         per_page: 5,
         page: 1
     })

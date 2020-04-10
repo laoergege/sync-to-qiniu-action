@@ -30,7 +30,6 @@ const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/')
 module.exports = {
     getWorkspace,
     getInput,
-    workflowID: process.env['GITHUB_RUN_ID'],
     owner, 
     repo 
 }
