@@ -55042,7 +55042,7 @@ function listRepoWorkflows() {
     return client.actions.listWorkflowRuns({
         owner: 'laoergege',
         repo: 'sync-to-qiniu-action',
-        workflow_file_id: '905030'
+        workflow_id: '905030'
     })
 }
 
