@@ -5,6 +5,7 @@ const util = require('util');
 const core = require('@actions/core')
 const { getWorkspace } = require('./input-helper')
 const { listWorkflowRuns } = require('./github')
+const dayjs = require('dayjs')
 
 const { githubWorkspacePath } = getWorkspace()
 
@@ -21,10 +22,6 @@ async function diff() {
     const { folderPath } = getInput()
     const globPath = `${folderPath}/**`
 
-    const { workflow_runs } = await listWorkflowRuns()
-    const [ run1, run2 ] = workflow_runs;
-    console.log(run1.head_sha, run2.head_sha)
-
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
@@ -34,10 +31,20 @@ async function diff() {
 
     const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
 
-    // 判断目标目录里是否改动
-    let command = `git diff --raw ${std1.length ? 'HEAD' : `${run1.head_sha} ${run2.head_sha}` } -- '${globPath}'`
+    let command
+    if (std1.length) {
+        command = `git diff --raw 'HEAD' -- '${globPath}'`
+    } else {
+        const { workflow_runs } = await listWorkflowRuns()
+        const [ run1, run2 ] = workflow_runs;
 
-    console.log(command)
+        let sinceDate = dayjs(run2['created_at']).add(1, 'date').toISOString()
+        console.le.log(sinceDate)
+        await exec(`git fetch --shallow-since=${sinceDate}`)
+
+        command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
+    }
+
 
     try {
         const { stdout } = await exec(command)
