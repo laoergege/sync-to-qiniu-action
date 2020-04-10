@@ -4,6 +4,7 @@ const childProcess = require('child_process');
 const util = require('util');
 const core = require('@actions/core')
 const { getWorkspace } = require('./input-helper')
+const { listRepoWorkflows } = require('./github')
 
 const { githubWorkspacePath } = getWorkspace()
 
@@ -21,9 +22,7 @@ async function diff() {
     const globPath = `${folderPath}/**`
 
     // 测试 reflog 功能
-    console.log('测试 reflog 功能')
-    const { stdout: std } = await exec('git reflog')
-    console.log(std)
+    console.log(await listRepoWorkflows())
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')

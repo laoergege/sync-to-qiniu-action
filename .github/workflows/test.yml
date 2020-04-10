@@ -20,3 +20,4 @@ jobs:
         zone: 'Zone_z2'
         folderPath: images
         mimeLimit: 'image/*'
+        token: ${{ secrets.GITHUB_TOKEN }}

@@ -16,6 +16,9 @@ inputs:
   folderPath:
     description: 'The folder which will sync to the qiniu'
     required: true
+  token:
+    default: 'a token with access to your repository scoped in as a secret'
+    required: true
   fsizeLimit:
     description: 'Maximum upload file size limit(byte)'
     default: 5 * 1024 * 1024 #默认 5M
