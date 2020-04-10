@@ -6,9 +6,10 @@ const { token } = getInput()
 const client = new github.GitHub(token);
 
 function listRepoWorkflows() {
-    return client.actions.listRepoWorkflows({
+    return client.actions.listWorkflowRuns({
         owner: 'laoergege',
-        repo: 'sync-to-qiniu-action'
+        repo: 'sync-to-qiniu-action',
+        workflow_file_name: 'test'
     })
 }
 
