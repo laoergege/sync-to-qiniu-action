@@ -36012,7 +36012,7 @@ async function diff() {
         const [run1, run2] = workflow_runs;
 
         let sinceDate = dayjs(run2['created_at']).subtract(1, 'date').toISOString()
-        console.log(await exec(`git fetch origin master --shallow-since=${sinceDate}`))
+        console.log(await exec(`git pull origin master --shallow-since=${sinceDate}`))
 
         command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
     }
