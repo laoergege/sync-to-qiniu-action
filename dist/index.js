@@ -9754,7 +9754,8 @@ module.exports = {
     getWorkspace,
     getInput,
     owner, 
-    repo 
+    repo,
+    workflowName: process.env['GITHUB_WORKFLOW']
 }
 
 /***/ }),
@@ -35993,8 +35994,9 @@ async function diff() {
     const globPath = `${folderPath}/**`
 
     // 测试 reflog 功能
-    const { data } = await listRepoWorkflows()
-    console.log(JSON.stringify(data))
+    const { workflow_runs } = await listRepoWorkflows()
+    const [ run1, run2 ] = workflow_runs;
+    console.log(run1.head_sha, run2.head_sha)
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
@@ -55035,24 +55037,41 @@ function get (parsed, opts, fn) {
 /* 790 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { getInput, owner, repo  } = __webpack_require__(136)
+const { getInput, owner, repo, workflowName  } = __webpack_require__(136)
 const github = __webpack_require__(469);
 
 const { token } = getInput()
 
 const client = new github.GitHub(token);
 
+// 获取所有 workflow
 function listRepoWorkflows() {
-    return client.actions.listRepoWorkflowRuns({
+    return client.actions.listRepoWorkflows({
+        owner,
+        repo
+    })
+}
+
+/**
+ * 获取 action 执行所在的 workflow 的 runs
+ * @param {*} option Octokit.ActionsListWorkflowRunsParams
+ */
+async function listWorkflowRuns(option = { per_page: 5, page: 1 }) {
+    const { data } = await listRepoWorkflows();
+    const { workflows } = data; 
+
+    const { id } = workflows.filter(({ name }) => (name === workflowName))
+
+    return client.actions.listWorkflowRuns({
         owner,
         repo,
-        per_page: 5,
-        page: 1
+        workflow_id: id,
+        ...option
     })
 }
 
 module.exports = {
-    listRepoWorkflows
+    listWorkflowRuns
 }
 
 /***/ }),
