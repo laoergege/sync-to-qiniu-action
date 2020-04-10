@@ -35992,8 +35992,10 @@ const exec = (function () {
 })()
 
 async function diff() {
-    const { folderPath } = getInput()
+    const { folderPath, branch } = getInput()
     const globPath = `${folderPath}/**`
+
+    console.log(branch)
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
