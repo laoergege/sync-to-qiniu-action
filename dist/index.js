@@ -35995,7 +35995,6 @@ async function diff() {
 
     const { workflow_runs } = await listWorkflowRuns()
     const [ run1, run2 ] = workflow_runs;
-    console.log(run1.head_sha, run2.head_sha)
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
@@ -36007,7 +36006,7 @@ async function diff() {
     const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
 
     // 判断目标目录里是否改动
-    let command = `git diff --raw ${std1.length ? 'HEAD' : 'HEAD~1'} -- '${globPath}'`
+    let command = `git diff --raw ${std1.length ? 'HEAD' : `${run1.head_sha} ${run2.head_sha}` } -- '${globPath}'`
 
     try {
         const { stdout } = await exec(command)
@@ -47055,7 +47054,11 @@ async function run() {
 }
 
 if (core.getState("isPost")) {
-  run()
+  try {
+    run()
+  } catch (error) {
+    core.setFailed(JSON.stringify(error))
+  }
 } else {
   core.saveState("isPost", '1');
 }
