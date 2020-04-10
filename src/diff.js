@@ -37,6 +37,8 @@ async function diff() {
     // 判断目标目录里是否改动
     let command = `git diff --raw ${std1.length ? 'HEAD' : `${run1.head_sha} ${run2.head_sha}` } -- '${globPath}'`
 
+    console.log(command)
+
     try {
         const { stdout } = await exec(command)
 
