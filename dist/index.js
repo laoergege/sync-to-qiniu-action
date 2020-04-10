@@ -35976,7 +35976,7 @@ const childProcess = __webpack_require__(129);
 const util = __webpack_require__(669);
 const core = __webpack_require__(470)
 const { getWorkspace } = __webpack_require__(136)
-const { listRepoWorkflows } = __webpack_require__(790)
+const { listWorkflowRuns } = __webpack_require__(790)
 
 const { githubWorkspacePath } = getWorkspace()
 
@@ -35994,7 +35994,7 @@ async function diff() {
     const globPath = `${folderPath}/**`
 
     // 测试 reflog 功能
-    const { workflow_runs } = await listRepoWorkflows()
+    const { workflow_runs } = await listWorkflowRuns()
     const [ run1, run2 ] = workflow_runs;
     console.log(run1.head_sha, run2.head_sha)
 
