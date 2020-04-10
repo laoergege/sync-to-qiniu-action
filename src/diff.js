@@ -25,14 +25,14 @@ async function diff() {
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
-    await exec(`git add '${globPath}'`).catch(() => {
-        core.info(`There are not change in ${folderPath}`)
-    })
-
     const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
 
     let command
     if (std1.length) {
+        await exec(`git add '${globPath}'`).catch(() => {
+            core.info(`There are not change in ${folderPath}`)
+        })
+
         command = `git diff --raw 'HEAD' -- '${globPath}'`
     } else {
         const { workflow_runs } = await listWorkflowRuns()
