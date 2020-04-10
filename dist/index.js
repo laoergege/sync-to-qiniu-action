@@ -35995,6 +35995,7 @@ async function diff() {
 
     const { workflow_runs } = await listWorkflowRuns()
     const [ run1, run2 ] = workflow_runs;
+    console.log(run1.head_sha, run2.head_sha)
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
