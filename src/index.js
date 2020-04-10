@@ -51,7 +51,11 @@ async function run() {
 }
 
 if (core.getState("isPost")) {
-  run()
+  try {
+    run()
+  } catch (error) {
+    core.setFailed(JSON.stringify(error))
+  }
 } else {
   core.saveState("isPost", '1');
 }

@@ -20,11 +20,18 @@ function getInput() {
         zone: core.getInput('zone'),
         folderPath: core.getInput('folderPath'),
         fsizeLimit: core.getInput('fsizeLimit'),
-        mimeLimit: core.getInput('mimeLimit')
+        mimeLimit: core.getInput('mimeLimit'),
+        token: core.getInput('token'), 
     }
 }
+
+const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/')
 
 module.exports = {
     getWorkspace,
     getInput,
+    owner, 
+    repo,
+    workflowName: process.env['GITHUB_WORKFLOW'],
+    branch: process.env['GITHUB_REF']
 }
