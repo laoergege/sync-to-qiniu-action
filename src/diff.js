@@ -12,7 +12,7 @@ const { githubWorkspacePath } = getWorkspace()
 const exec = (function () {
     const _exec = util.promisify(childProcess.exec)
     return function (command) {
-        return _exec(command,  {
+        return _exec(command, {
             cwd: githubWorkspacePath
         })
     }
@@ -36,7 +36,7 @@ async function diff() {
         command = `git diff --raw 'HEAD' -- '${globPath}'`
     } else {
         const { workflow_runs } = await listWorkflowRuns()
-        const [ run1, run2 ] = workflow_runs;
+        const [run1, run2] = workflow_runs;
 
         let sinceDate = dayjs(run2['created_at']).add(1, 'date').toISOString()
         console.le.log(sinceDate)
@@ -46,24 +46,16 @@ async function diff() {
     }
 
 
-    try {
-        const { stdout } = await exec(command)
+    const { stdout } = await exec(command)
 
-        const lines = stdout.match(/.+$/gm) || []
+    const lines = stdout.match(/.+$/gm) || []
 
-        const summary = lines.map((line) => (line.split(/\s/).slice(4))).map((row) => {
-            row[0] = row[0].replace(/\d/g, '')
-            return row
-        })
+    const summary = lines.map((line) => (line.split(/\s/).slice(4))).map((row) => {
+        row[0] = row[0].replace(/\d/g, '')
+        return row
+    })
 
-        return summary
-    } catch (err) {
-        const { stderr } = err
-        if (stderr.includes("fatal: bad revision")) {
-            core.error('please set fetch-depth of the "actions/checkout" config, eg. fetch-depth: 2')
-        }
-        throw(stderr)
-    }
+    return summary
 }
 
 module.exports = diff
