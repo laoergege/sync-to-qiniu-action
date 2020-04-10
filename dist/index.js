@@ -9755,7 +9755,8 @@ module.exports = {
     getInput,
     owner, 
     repo,
-    workflowName: process.env['GITHUB_WORKFLOW']
+    workflowName: process.env['GITHUB_WORKFLOW'],
+    branch: process.env['GITHUB_REF']
 }
 
 /***/ }),
@@ -36011,7 +36012,7 @@ async function diff() {
         const [run1, run2] = workflow_runs;
 
         let sinceDate = dayjs(run2['created_at']).subtract(1, 'date').toISOString()
-        await exec(`git fetch --shallow-since=${sinceDate}`)
+        console.log(await exec(`git fetch origin master --shallow-since=${sinceDate}`))
 
         command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
     }

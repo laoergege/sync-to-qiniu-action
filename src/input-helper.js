@@ -32,5 +32,6 @@ module.exports = {
     getInput,
     owner, 
     repo,
-    workflowName: process.env['GITHUB_WORKFLOW']
+    workflowName: process.env['GITHUB_WORKFLOW'],
+    branch: process.env['GITHUB_REF']
 }
