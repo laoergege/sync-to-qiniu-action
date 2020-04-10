@@ -35993,7 +35993,6 @@ async function diff() {
     const { folderPath } = getInput()
     const globPath = `${folderPath}/**`
 
-    // 测试 reflog 功能
     const { workflow_runs } = await listWorkflowRuns()
     const [ run1, run2 ] = workflow_runs;
     console.log(run1.head_sha, run2.head_sha)
@@ -55067,7 +55066,7 @@ async function listWorkflowRuns(option = { per_page: 5, page: 1 }) {
         repo,
         workflow_id: id,
         ...option
-    })
+    }).then(({data}) => (data))
 }
 
 module.exports = {

@@ -28,7 +28,7 @@ async function listWorkflowRuns(option = { per_page: 5, page: 1 }) {
         repo,
         workflow_id: id,
         ...option
-    })
+    }).then(({data}) => (data))
 }
 
 module.exports = {
