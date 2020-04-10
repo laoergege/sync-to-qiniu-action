@@ -9,7 +9,7 @@ function listRepoWorkflows() {
     return client.actions.listWorkflowRuns({
         owner,
         repo,
-        workflow_id: workflowID,
+        workflow_id: 'test',
         per_page: 5,
         page: 1
     })
