@@ -20,6 +20,8 @@ async function diff() {
     const { folderPath } = getInput()
     const globPath = `${folderPath}/**`
 
+    // 测试 log
+
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
