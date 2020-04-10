@@ -55059,8 +55059,8 @@ function listRepoWorkflows() {
 async function listWorkflowRuns(option = { per_page: 5, page: 1 }) {
     const { data } = await listRepoWorkflows();
     const { workflows } = data; 
-
-    const { id } = workflows.filter(({ name }) => (name === workflowName))
+    
+    const { id } = workflows.find(({ name }) => (name === workflowName))
 
     return client.actions.listWorkflowRuns({
         owner,
