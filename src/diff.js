@@ -40,6 +40,8 @@ async function diff() {
         const { workflow_runs } = await listWorkflowRuns()
         const [run1, run2] = workflow_runs;
 
+        console.log('head_branch', run1.head_branch)
+
         let sinceDate = dayjs.utc(run2.head_commit.timestamp).subtract(1, 'day').format('YYYY-MM-DD')
         await exec(`git fetch --shallow-since=${sinceDate} origin master`)
 
