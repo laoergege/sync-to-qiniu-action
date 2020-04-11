@@ -27,15 +27,10 @@ function getInput() {
 
 const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/')
 
-console.log(process.env['GITHUB_REF'])
-console.log(process.env['GITHUB_HEAD_REF'])
-console.log(process.env['GITHUB_BASE_REF'])
-
 module.exports = {
     getWorkspace,
     getInput,
     owner, 
     repo,
-    workflowName: process.env['GITHUB_WORKFLOW'],
-    branch: process.env['GITHUB_REF']
+    workflowName: process.env['GITHUB_WORKFLOW']
 }
