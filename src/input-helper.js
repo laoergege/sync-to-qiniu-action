@@ -20,8 +20,7 @@ function getInput() {
         zone: core.getInput('zone'),
         path: core.getInput('path'),
         fsizeLimit: core.getInput('fsizeLimit'),
-        mimeLimit: core.getInput('mimeLimit'),
-        token: core.getInput('token'), 
+        mimeLimit: core.getInput('mimeLimit')
     }
 }
 
@@ -32,5 +31,6 @@ module.exports = {
     getInput,
     owner, 
     repo,
-    workflowName: process.env['GITHUB_WORKFLOW']
+    workflowName: process.env['GITHUB_WORKFLOW'],
+    token: process.env['GITHUB_TOKEN'],
 }
