@@ -24,8 +24,6 @@ async function diff() {
     const { folderPath, branch } = getInput()
     const globPath = `${folderPath}/**`
 
-    console.log(branch)
-
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
@@ -43,8 +41,7 @@ async function diff() {
         const [run1, run2] = workflow_runs;
 
         let sinceDate = dayjs.utc(run2.head_commit.timestamp).subtract(1, 'day').format('YYYY-MM-DD')
-        console.log(await exec(`git fetch --shallow-since=${sinceDate} origin master`))
-        console.log(await exec(`git log -n 3`))
+        await exec(`git fetch --shallow-since=${sinceDate} origin master`)
 
         command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
     }
