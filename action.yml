@@ -1,5 +1,5 @@
 name: 'sync-to-qiniu-action'
-description: 'Synchronize the contents of your folder to qiniu'
+description: 'Synchronize the files in the specified path to qiniu'
 inputs:
   accessKey:
     description: 'qiniu accessKey'
