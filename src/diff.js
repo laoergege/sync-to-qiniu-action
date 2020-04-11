@@ -6,6 +6,8 @@ const core = require('@actions/core')
 const { getWorkspace } = require('./input-helper')
 const { listWorkflowRuns } = require('./github')
 const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
+dayjs.extend(utc)
 
 const { githubWorkspacePath } = getWorkspace()
 
@@ -40,7 +42,7 @@ async function diff() {
         const { workflow_runs } = await listWorkflowRuns()
         const [run1, run2] = workflow_runs;
 
-        let sinceDate = dayjs(run2['created_at']).subtract(1, 'date').format('YYYY-MM-DD')
+        let sinceDate = dayjs.utc(run2.head_commit.timestamp).subtract(1, 'day').format('YYYY-MM-DD')
         console.log(await exec(`git fetch --shallow-since=${sinceDate} origin master`))
         console.log(await exec(`git log -n 3`))
 
