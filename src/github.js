@@ -1,6 +1,7 @@
-const { owner, repo, workflowName, token  } = require('./input-helper')
+const { getInput, owner, repo, workflowName  } = require('./input-helper')
 const github = require('@actions/github');
 
+const { token } = getInput()
 
 const client = new github.GitHub(token);
 

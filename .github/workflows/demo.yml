@@ -18,4 +18,5 @@ jobs:
         bucket: 'laoergege-blog-images'
         zone: 'Zone_z2'
         path: demo
-        mimeLimit: 'image/*'
+        mimeLimit: 'image/*',
+        token: ${{ secrets.GITHUB_TOKEN }}
