@@ -9756,17 +9756,12 @@ function getInput() {
 
 const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/')
 
-console.log(process.env['GITHUB_REF'])
-console.log(process.env['GITHUB_HEAD_REF'])
-console.log(process.env['GITHUB_BASE_REF'])
-
 module.exports = {
     getWorkspace,
     getInput,
     owner, 
     repo,
-    workflowName: process.env['GITHUB_WORKFLOW'],
-    branch: process.env['GITHUB_REF']
+    workflowName: process.env['GITHUB_WORKFLOW']
 }
 
 /***/ }),
@@ -36004,33 +35999,28 @@ const exec = (function () {
 })()
 
 async function diff() {
-    const { folderPath, branch } = getInput()
+    const { folderPath } = getInput()
     const globPath = `${folderPath}/**`
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
 
-    const { stdout: std1 } = await exec(`git status -s -- ${globPath}`)
-
     let command
-    if (std1.length) {
-        await exec(`git add '${globPath}'`).catch(() => {
-            core.info(`There are not change in ${folderPath}`)
-        })
 
-        command = `git diff --raw 'HEAD' -- '${globPath}'`
-    } else {
-        const { workflow_runs } = await listWorkflowRuns()
-        const [run1, run2] = workflow_runs;
+    await exec(`git add -- '${globPath}'`).catch(() => {
+        core.info(`There are not change in ${folderPath}`)
+    })
 
-        console.log('head_branch', run1.head_branch)
+    const { workflow_runs } = await listWorkflowRuns()
+    // run1 正在运行，run2 上次运行
+    const [run1, run2] = workflow_runs;
 
-        let sinceDate = dayjs.utc(run2.head_commit.timestamp).subtract(1, 'day').format('YYYY-MM-DD')
-        await exec(`git fetch --shallow-since=${sinceDate} origin master`)
+    // 获取确保 run2 之后的所有 commit
+    let sinceDate = dayjs.utc(run2.head_commit.timestamp).subtract(1, 'day').format('YYYY-MM-DD')
+    let branch = run1.head_branch
+    await exec(`git fetch --shallow-since=${sinceDate} origin ${branch}`)
 
-        command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
-    }
-
+    command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
 
     const { stdout } = await exec(command)
 
