@@ -21,8 +21,8 @@ const exec = (function () {
 })()
 
 async function diff() {
-    const { folderPath } = getInput()
-    const globPath = `${folderPath}/**`
+    const { path } = getInput()
+    const globPath = `${path}/**`
 
     // 禁止 git 中文文件名编码
     await exec('git config --global core.quotepath false')
@@ -30,7 +30,7 @@ async function diff() {
     let command
 
     await exec(`git add -- '${globPath}'`).catch(() => {
-        core.info(`There are not change in ${folderPath}`)
+        core.info(`There are not change in ${path}`)
     })
 
     const { workflow_runs } = await listWorkflowRuns()

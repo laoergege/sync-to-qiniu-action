@@ -18,7 +18,7 @@ function getInput() {
         secretKey: core.getInput('secretKey'),
         bucket: core.getInput('bucket'),
         zone: core.getInput('zone'),
-        folderPath: core.getInput('folderPath'),
+        path: core.getInput('path'),
         fsizeLimit: core.getInput('fsizeLimit'),
         mimeLimit: core.getInput('mimeLimit'),
         token: core.getInput('token'), 
