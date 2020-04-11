@@ -1,18 +1,18 @@
 {
   "name": "sync-to-qiniu-action",
   "private": true,
-  "version": "0.1.0",
-  "description": "Synchronize the contents of your folder to qiniu",
+  "version": "1.0.0",
+  "description": "synchronize the files in the specified path to qiniu",
   "main": "./dist/index.js",
   "scripts": {
     "lint": "eslint index.js",
-    "package": "ncc build ./src/index.js -o dist",
+    "package": "ncc -m build ./src/index.js -o dist",
     "test": "eslint index.js && jest",
     "test-fw": "npm run package && git add . && git commit -m 'test-fw' && git push"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/laoergege/sync-to-qiniu-action"
   },
   "keywords": [
     "GitHub",
@@ -20,12 +20,8 @@
     "JavaScript",
     "Qiniu"
   ],
-  "author": "GitHub",
+  "author": "laoergege",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
-  },
-  "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.3",
     "@actions/github": "^2.1.1",
