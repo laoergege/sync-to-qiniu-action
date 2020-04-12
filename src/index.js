@@ -50,12 +50,17 @@ async function run() {
   qiniu.batchUpFiles(modifies.map(([path]) => (path)))
 }
 
-if (core.getState("isPost")) {
+async function main() {
   try {
     run()
   } catch (error) {
-    core.setFailed(JSON.stringify(error))
+    core.setFailed(error.message)
+    throw error
   }
+}
+
+if (core.getState("isPost")) {
+  main()
 } else {
   core.saveState("isPost", '1');
 }

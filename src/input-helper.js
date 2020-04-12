@@ -25,12 +25,8 @@ function getInput() {
     }
 }
 
-const [owner, repo] = process.env['GITHUB_REPOSITORY'].split('/')
-
 module.exports = {
     getWorkspace,
     getInput,
-    owner, 
-    repo,
     workflowName: process.env['GITHUB_WORKFLOW']
 }
