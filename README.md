@@ -1,13 +1,14 @@
 
-<p align="center">
-  <a href="https://github.com/actions/javascript-action/actions"><img alt="javscript-action status" src="https://github.com/actions/javascript-action/workflows/units-test/badge.svg"></a>
-</p>
+![test](https://github.com/laoergege/sync-to-qiniu-action/workflows/test/badge.svg)
 
 # sync-to-qiniu-action
 
 This action can synchronize files in the path you specified to [qiniu(KODO)](https://www.qiniu.com/products/kodo), including delete, modify, and move&rename operations.
 
 ## Pre-requisites
+
+- To use this action must after the [actions/checkout](https://github.com/actions/checkout)
+- Open [Qiniu KOBO](https://www.qiniu.com/products/kodo) service
 
 ## Input
 
@@ -27,6 +28,10 @@ This action can synchronize files in the path you specified to [qiniu(KODO)](htt
 
 in your workflow
 ```yml
+# before using it, there must have actions/checkout
+- uses: actions/checkout@v2
+      with: 
+        token: ${{ secrets.GITHUB_TOKEN }}
 - uses: laoergege/sync-to-qiniu-action@v1
       with:
         accessKey: ${{ secrets.accessKey }}
