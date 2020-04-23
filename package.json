@@ -8,7 +8,7 @@
     "lint": "eslint src/index.js",
     "package": "ncc -m build ./src/index.js -o dist",
     "test": "eslint index.js && jest",
-    "test-fw": "npm run package && git add . && git commit -m 'test-fw' && git push"
+    "test-fw": "git tag -d test && git tag test && git push origin page -f"
   },
   "repository": {
     "type": "git",
