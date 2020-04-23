@@ -19,7 +19,7 @@ This action can synchronize files in the path you specified to [qiniu(KODO)](htt
 | bucket     | true     |                      | qiniu bucket                                                 |
 | zone       | true     |                      | bucket zone                                                  |
 | path       | true     |                      | the path under files you want to upload                      |
-| token      | true     |                      | a token with access to your repository scoped in as a secret |
+| token      | true     | secrets.GITHUB_TOKEN | a token with access to your repository scoped in as a secret |
 | fsizeLimit | false    | 5 * 1024 * 1024 byte | maximum upload file size limit(byte)                         |
 | mimeLimit  | false    |                      | File MimeType                                                |
 
@@ -28,7 +28,7 @@ This action can synchronize files in the path you specified to [qiniu(KODO)](htt
 
 in your workflow
 ```yml
-# before using it, there must have actions/checkout
+# actions/checkout is required before using it
 - uses: actions/checkout@v2
       with: 
         token: ${{ secrets.GITHUB_TOKEN }}
