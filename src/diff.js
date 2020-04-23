@@ -42,7 +42,7 @@ async function diff() {
     let branch = run1.head_branch
     await exec(`git fetch --shallow-since=${sinceDate} origin ${branch}`)
 
-    command = `git diff --raw ${run2.head_sha} ${run1.head_sha} -- '${globPath}'`
+    command = `git diff --raw ${run2.head_sha} -- '${globPath}'`
 
     const { stdout } = await exec(command)
 
