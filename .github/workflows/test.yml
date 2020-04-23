@@ -20,7 +20,7 @@ jobs:
         path: demo
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
-        echo 123 >> ./demo/test.txt
+        echo 123 >> ./demo/demo.txt
   modify:
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +36,7 @@ jobs:
         path: demo
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
-        echo 456 >> ./demo/test.txt
+        echo 456 >> ./demo/demo.txt
   move:
     runs-on: ubuntu-latest
     steps:
@@ -52,7 +52,7 @@ jobs:
         path: demo
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
-        echo ./demo/test.txt ./demo/Test.txt
+        echo ./demo/test.txt ./demo/Demo.txt
   delete:
     runs-on: ubuntu-latest
     steps:
@@ -68,4 +68,4 @@ jobs:
         path: demo
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
-        rm -f ./demo/Test.txt
+        rm -f ./demo/Demo.txt
