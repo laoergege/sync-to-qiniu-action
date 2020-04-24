@@ -1,6 +1,7 @@
 const qiniu = require('qiniu')
 const core = require('@actions/core');
-const { stringify } = require('./utils')
+const { stringify, isNonEmptyArray, sendReq } = require('./utils')
+const { REQ_MAX_COUNT } = require('./constants')
 
 class Qiniu {
 
@@ -96,22 +97,22 @@ class Qiniu {
      * @param {Array<string>} paths path 文件路径数组
      */
     async batchUploadFiles(paths) {
-      if (!Array.isArray(paths) || paths.length === 0) {
+      if (!isNonEmptyArray(paths)) {
         return
       }
 
-      for (let index = 0; index < paths.length; index++) {
-        const [key, path] = paths[index]
-        core.info(`${key} is uploading...`)
-        try {
-          await this.uploadFile(key, path)
-          core.info(`${key} uploaded successfully`)
-        } catch (error) {
-          core.error(`${key} upload failed，please manually upload again`)
-          core.error(stringify(error))
-        }
-        continue
-      }
+      let https = paths.map(([key, path]) => (() => {
+        return this.uploadFile(key, path).then(() => (key))
+      }))
+
+      sendReq(https, REQ_MAX_COUNT, (err, res) => {
+        if (isNonEmptyArray(err)) {
+          core.error(`There are some files that upload failed，please manually upload them again:\n${err}`)
+          throw(1)
+        } else {
+          core.info(`${res} \n are uploaded successfully`)
+        }  
+      })
     }
 
     /**
@@ -119,7 +120,7 @@ class Qiniu {
      * @param {Array<string>} paths 文件名数组, length 不可以超过1000个，如果总数量超过1000，需要分批发送
      */
     batchDelFiles(paths = []) {
-        if (!Array.isArray(paths) || paths.length === 0) {
+        if (!isNonEmptyArray(paths)) {
           return
         }
 
