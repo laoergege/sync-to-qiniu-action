@@ -1,6 +1,6 @@
 const qiniu = require('qiniu')
 const core = require('@actions/core');
-const { stringify, isNonEmptyArray, sendReq } = require('./utils')
+const { stringify, isNonEmptyArray, sendReq, splitArrByCount } = require('./utils')
 const { REQ_MAX_COUNT } = require('./constants')
 
 class Qiniu {
@@ -106,12 +106,13 @@ class Qiniu {
       }))
 
       sendReq(https, REQ_MAX_COUNT, (err, res) => {
+        if (isNonEmptyArray(res)) {
+          core.info(`${stringify(res)} \n are uploaded successfully`)
+        }
         if (isNonEmptyArray(err)) {
-          core.error(`There are some files that upload failed，please manually upload them again:\n${err}`)
+          core.error(`There are some files that upload failed，please manually upload them again:\n${stringify(err)}`)
           throw(1)
-        } else {
-          core.info(`${res} \n are uploaded successfully`)
-        }  
+        }
       })
     }
 
@@ -124,30 +125,42 @@ class Qiniu {
           return
         }
 
-        const deleteOperations = paths.map((key) => (qiniu.rs.deleteOp(this.bucket, key)))
-
-        return new Promise((resolve, reject) => {
-          this.bucketManager.batch(deleteOperations, function(err, respBody, respInfo) {
-            if (err) {
-              core.error((err));
-              reject(err)
-            } else {
-              // 200 is success, 298 is part success
-              if (parseInt(respInfo.statusCode / 100) == 2) {
-                respBody.forEach(function(item, i) {
-                  if (item.code == 200) {
-                    core.info(`delete ${paths[i]}\t${item.code}\tsuccess`);
+        const deleteOperations = splitArrByCount(paths.map((key) => (qiniu.rs.deleteOp(this.bucket, key))))
+          .map(delopers => (() => {
+            return new Promise((resolve, reject) => {
+              this.bucketManager.batch(delopers, function(err, respBody, respInfo) {
+                if (err) {
+                  reject(err)
+                } else {
+                  // 200 is success, 298 is part success
+                  if (parseInt(respInfo.statusCode / 100) == 2) {
+                    respBody.forEach(function(item, i) {
+                      if (item.code == 200) {
+                        core.info(`delete ${paths[i]}\t${item.code}\tsuccess`);
+                      } else {
+                        core.info(`delete ${paths[i]}\t${item.code}\t${item.data.error}`);
+                      }
+                    });
                   } else {
-                    core.info(`delete ${paths[i]}\t${item.code}\t${item.data.error}`);
+                    reject({
+                      deleteusCode: respInfo.deleteusCode,
+                      respBody
+                    })
                   }
-                });
-              } else {
-                core.warning(respInfo.deleteusCode)
-                core.warning(respBody)
-              }
-              resolve()
-            }
-          });
+                  resolve(paths)
+                }
+              });
+            })
+          }))
+
+        sendReq(deleteOperations, REQ_MAX_COUNT, (err, res) => {
+          if (isNonEmptyArray(res)) {
+            core.info(`${stringify(res)} \n are uploaded successfully`)
+          }
+          if (isNonEmptyArray(err)) {
+            core.error(`There are some files that upload failed，please manually upload them again:\n${stringify(err)}`)
+            throw(1)
+          }  
         })
     }
 
@@ -156,37 +169,49 @@ class Qiniu {
      * @param {Array<[src: string, dst: string]>} paths o: 源文件名， dest: 新文件名, length 不可以超过1000个，如果总数量超过1000，需要分批发送
      */
     batchMVFiles(paths = []) {
-      if (!Array.isArray(paths) || paths.length === 0) {
+      if (!isNonEmptyArray(paths)) {
         return
       }
 
-      var moveOperations = paths.map(key => {
+      var moveOperations = splitArrByCount(paths.map(key => {
         const [src, dest] = key
         return qiniu.rs.moveOp(this.bucket, src, this.bucket, dest)
-      });
-
-      return new Promise((resolve, reject) => {
-        this.bucketManager.batch(moveOperations, function(err, respBody, respInfo) {
-          if (err) {
-            core.error(stringify(err));
-            reject(err)
-          } else {
-            // 200 is success, 298 is part success
-            if (parseInt(respInfo.statusCode / 100) == 2) {
-              respBody.forEach(function(item, i) {
-                if (item.code == 200) {
-                  core.info(`rename ${paths[i]}\t${item.code}\tsuccess`);
-                } else {
-                  core.info(`rename ${paths[i]}\t${item.code}\t${item.data.error}`);
-                }
-              });
+      }))
+      .map(mvopers => (() => {
+        return new Promise((resolve, reject) => {
+          this.bucketManager.batch(mvopers, function(err, respBody, respInfo) {
+            if (err) {
+              reject(err)
             } else {
-              core.warning(respInfo.deleteusCode);
-              core.warning(respBody);
+              // 200 is success, 298 is part success
+              if (parseInt(respInfo.statusCode / 100) == 2) {
+                respBody.forEach(function(item, i) {
+                  if (item.code == 200) {
+                    core.info(`rename ${paths[i]}\t${item.code}\tsuccess`);
+                  } else {
+                    core.info(`rename ${paths[i]}\t${item.code}\t${item.data.error}`);
+                  }
+                });
+              } else {
+                reject({
+                  deleteusCode: respInfo.deleteusCode,
+                  respBody
+                })
+              }
+              resolve(paths.map(([ src, dest ]) => (`${src} => ${dest}`)))
             }
-            resolve()
-          }
+          })
         })
+      }));
+
+      sendReq(moveOperations, REQ_MAX_COUNT,(err, res) => {
+        if (isNonEmptyArray(res)) {
+          core.info(`${stringify(res)} \n are moved successfully`)
+        }
+        if (isNonEmptyArray(err)) {
+          core.error(`There are some files that moved failed，please manually moved them again:\n${stringify(err)}`)
+          throw(1)
+        }  
       })
     }
     
@@ -195,21 +220,26 @@ class Qiniu {
      * @param {Array<string>} paths 文件路径数组
      */
     async batchUpFiles(paths) {
-      if (!Array.isArray(paths) || paths.length === 0) {
+      if (!isNonEmptyArray(paths)) {
         return
       } 
 
-      for (let index = 0; index < paths.length; index++) {
-        const path = paths[index];
-        try {
-          await this.deleteFile(path) // 删除旧文件
-          await this.uploadFile(path, path) // 重新上传新文件
-          core.info(`${path} updated successfully`)
-        } catch (error) {
-          core.error(`${path} update failed`)
-          core.error(stringify(error))
+      const upOperations = paths.map(path => (async () => {
+        await this.deleteFile(path) // 删除旧文件
+        await this.uploadFile(path, path) // 重新上传新文件
+
+        return path
+      }))
+
+      sendReq(upOperations, REQ_MAX_COUNT, (err, res) => {
+        if (isNonEmptyArray(res)) {
+          core.info(`${stringify(res)} \n are moved successfully`)
         }
-      }
+        if (isNonEmptyArray(err)) {
+          core.error(`There are some files that moved failed，please manually moved them again:\n${stringify(err)}`)
+          throw(1)
+        }  
+      })
     }
 }
 

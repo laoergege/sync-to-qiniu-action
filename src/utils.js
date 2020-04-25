@@ -1,5 +1,5 @@
 function stringify(obj) {
-    return JSON.stringify(obj)
+    return JSON.stringify(obj, null, 2)
 }
 
 function isNonEmptyArray(arr) {
@@ -35,8 +35,23 @@ function sendReq(https, max, callback) {
     }
 }
 
+/**
+ * 分割数组
+ * @param {*} array 
+ * @param {*} len 
+ */
+function splitArrByCount(array, len) {
+    const result = []
+    let i = 0
+    while (i < array.length) {
+        result.push(array.slice(i, i = len + i))
+    }
+    return result
+}
+
 module.exports = {
     stringify,
     isNonEmptyArray,
-    sendReq
+    sendReq,
+    splitArrByCount
 }
