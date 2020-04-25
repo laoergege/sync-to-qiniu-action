@@ -20,7 +20,7 @@ jobs:
         path: demo
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
-        echo 123 >> ./demo/test.txt
+        echo 123 > ./demo/test.txt
   modify:
       runs-on: ubuntu-latest
       steps:

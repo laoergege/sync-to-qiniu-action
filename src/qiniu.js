@@ -155,10 +155,10 @@ class Qiniu {
 
         sendReq(deleteOperations, REQ_MAX_COUNT, (err, res) => {
           if (isNonEmptyArray(res)) {
-            core.info(`${stringify(res)} \n are uploaded successfully`)
+            core.info(`${stringify(res)} \n are deleted successfully`)
           }
           if (isNonEmptyArray(err)) {
-            core.error(`There are some files that upload failed，please manually upload them again:\n${stringify(err)}`)
+            core.error(`There are some files that delete failed，please manually delete them again:\n${stringify(err)}`)
             throw(1)
           }  
         })
