@@ -22,6 +22,7 @@ jobs:
     - run: |
         echo 123 > ./demo/test.txt
   modify:
+    needs: add
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -38,6 +39,7 @@ jobs:
     - run: |
         echo 456 >> ./demo/test.txt
   move:
+    needs: modify
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -54,6 +56,7 @@ jobs:
     - run: |
         echo ./demo/test.txt ./demo/Test.txt
   delete:
+    needs: move
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
