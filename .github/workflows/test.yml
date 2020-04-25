@@ -22,21 +22,21 @@ jobs:
     - run: |
         echo 123 > ./demo/test.txt
   modify:
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v2
-        with: 
-          token: ${{ secrets.token }}
-      - uses: ./
-        with:
-          accessKey: ${{ secrets.accessKey }}
-          secretKey: ${{ secrets.secretKey }}
-          bucket: 'laoergege-blog-images'
-          zone: 'Zone_z2'
-          path: demo
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
-          echo 456 >> ./demo/test.txt
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with: 
+        token: ${{ secrets.token }}
+    - uses: ./
+      with:
+        accessKey: ${{ secrets.accessKey }}
+        secretKey: ${{ secrets.secretKey }}
+        bucket: 'laoergege-blog-images'
+        zone: 'Zone_z2'
+        path: demo
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - run: |
+        echo 456 >> ./demo/test.txt
   move:
     runs-on: ubuntu-latest
     steps:

@@ -233,10 +233,10 @@ class Qiniu {
 
       sendReq(upOperations, REQ_MAX_COUNT, (err, res) => {
         if (isNonEmptyArray(res)) {
-          core.info(`${stringify(res)} \n are moved successfully`)
+          core.info(`${stringify(res)} \n are updated successfully`)
         }
         if (isNonEmptyArray(err)) {
-          core.error(`There are some files that moved failed，please manually moved them again:\n${stringify(err)}`)
+          core.error(`There are some files that update failed，please manually update them again:\n${stringify(err)}`)
           throw(1)
         }  
       })
