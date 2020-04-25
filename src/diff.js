@@ -44,7 +44,11 @@ async function diff() {
 
     command = `git diff --raw ${run2.head_sha} -- '${globPath}'`
 
-    const { stdout } = await exec(command)
+    const { stderr, stdout } = await exec(command)
+
+    if (stderr) {
+        throw(1)
+    }
 
     const lines = stdout.match(/.+$/gm) || []
 
