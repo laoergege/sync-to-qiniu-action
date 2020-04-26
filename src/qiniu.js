@@ -111,7 +111,6 @@ class Qiniu {
         }
         if (isNonEmptyArray(err)) {
           core.error(`There are some files that upload failed，please manually upload them again:\n${stringify(err)}`)
-          throw(1)
         }
       })
     }
@@ -159,7 +158,7 @@ class Qiniu {
           }
           if (isNonEmptyArray(err)) {
             core.error(`There are some files that delete failed，please manually delete them again:\n${stringify(err)}`)
-            throw(1)
+
           }  
         })
     }
@@ -210,7 +209,6 @@ class Qiniu {
         }
         if (isNonEmptyArray(err)) {
           core.error(`There are some files that moved failed，please manually moved them again:\n${stringify(err)}`)
-          throw(1)
         }  
       })
     }
@@ -237,7 +235,6 @@ class Qiniu {
         }
         if (isNonEmptyArray(err)) {
           core.error(`There are some files that update failed，please manually update them again:\n${stringify(err)}`)
-          throw(1)
         }  
       })
     }
