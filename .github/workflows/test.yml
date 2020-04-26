@@ -5,8 +5,31 @@ on:
       - 'run-test'
 
 jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with: 
+        token: ${{ secrets.token }}
+        ref: test
+    - uses: ./
+      with:
+        accessKey: ${{ secrets.accessKey }}
+        secretKey: ${{ secrets.secretKey }}
+        bucket: 'laoergege-blog-images'
+        zone: 'Zone_z2'
+        path: demo
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - run: |
+        rm -f ./demo/Test.txt
+        git config --global user.email "test@qq.com"
+        git config --global user.name "laoergege"
+        git add .
+        git commit -m "move test.txt to Test.txt"
+        git push
   add:
     runs-on: ubuntu-latest
+    needs: delete
     steps:
     - uses: actions/checkout@v2
       with: 
@@ -70,29 +93,6 @@ jobs:
     - if: hashFiles('./demo/test.txt')
       run: |
         echo ./demo/test.txt ./demo/Test.txt
-        git config --global user.email "test@qq.com"
-        git config --global user.name "laoergege"
-        git add .
-        git commit -m "move test.txt to Test.txt"
-        git push
-  delete:
-    needs: move
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with: 
-        token: ${{ secrets.token }}
-        ref: test
-    - uses: ./
-      with:
-        accessKey: ${{ secrets.accessKey }}
-        secretKey: ${{ secrets.secretKey }}
-        bucket: 'laoergege-blog-images'
-        zone: 'Zone_z2'
-        path: demo
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - run: |
-        rm -f ./demo/Test.txt
         git config --global user.email "test@qq.com"
         git config --global user.name "laoergege"
         git add .
