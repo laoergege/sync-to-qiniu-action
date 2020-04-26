@@ -1,8 +1,8 @@
 name: Test
 on:
   push:
-    branchs:
-      - test
+    tags: 
+      - 'run-test'
 
 jobs:
   add:
