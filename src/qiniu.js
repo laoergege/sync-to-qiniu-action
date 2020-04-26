@@ -117,14 +117,15 @@ class Qiniu {
 
     /**
      * 批量删除文件
-     * @param {Array<string>} paths 文件名数组, length 不可以超过1000个，如果总数量超过1000，需要分批发送
+     * @param {Array<string>} paths 文件名数组
      */
     batchDelFiles(paths = []) {
         if (!isNonEmptyArray(paths)) {
           return
         }
 
-        const deleteOperations = splitArrByCount(paths.map((key) => (qiniu.rs.deleteOp(this.bucket, key))))
+        //每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
+        const deleteOperations = splitArrByCount(paths.map((key) => (qiniu.rs.deleteOp(this.bucket, key))), 1000)
           .map(delopers => (() => {
             return new Promise((resolve, reject) => {
               this.bucketManager.batch(delopers, function(err, respBody, respInfo) {
@@ -133,49 +134,42 @@ class Qiniu {
                 } else {
                   // 200 is success, 298 is part success
                   if (parseInt(respInfo.statusCode / 100) == 2) {
-                    respBody.forEach(function(item, i) {
-                      if (item.code == 200) {
-                        core.info(`delete ${paths[i]}\t${item.code}\tsuccess`);
-                      } else {
-                        core.info(`delete ${paths[i]}\t${item.code}\t${item.data.error}`);
-                      }
-                    });
+                    reject(respBody.filter(item => item !== 200))
                   } else {
                     reject({
-                      deleteusCode: respInfo.deleteusCode,
+                      respInfo,
                       respBody
                     })
                   }
-                  resolve(paths)
+                  resolve()
                 }
               });
             })
           }))
 
-        sendReq(deleteOperations, REQ_MAX_COUNT, (err, res) => {
-          if (isNonEmptyArray(res)) {
-            core.info(`${stringify(res)} \n are deleted successfully`)
-          }
+        sendReq(deleteOperations, REQ_MAX_COUNT, (err) => {
           if (isNonEmptyArray(err)) {
-            core.error(`There are some files that delete failed，please manually delete them again:\n${stringify(err)}`)
-
-          }  
+            core.error(`Something is wrong :\n${stringify(err)}`)
+          } else {
+            core.info('All are deleted successfully')
+          }
         })
     }
 
     /**
      * 批量移动或者重命名文件
-     * @param {Array<[src: string, dst: string]>} paths o: 源文件名， dest: 新文件名, length 不可以超过1000个，如果总数量超过1000，需要分批发送
+     * @param {Array<[src: string, dst: string]>} paths o: 源文件名， dest: 新文件名
      */
     batchMVFiles(paths = []) {
       if (!isNonEmptyArray(paths)) {
         return
       }
 
+      //每个operations的数量不可以超过1000个，如果总数量超过1000，需要分批发送
       var moveOperations = splitArrByCount(paths.map(key => {
         const [src, dest] = key
         return qiniu.rs.moveOp(this.bucket, src, this.bucket, dest)
-      }))
+      }), 1000)
       .map(mvopers => (() => {
         return new Promise((resolve, reject) => {
           this.bucketManager.batch(mvopers, function(err, respBody, respInfo) {
@@ -184,31 +178,24 @@ class Qiniu {
             } else {
               // 200 is success, 298 is part success
               if (parseInt(respInfo.statusCode / 100) == 2) {
-                respBody.forEach(function(item, i) {
-                  if (item.code == 200) {
-                    core.info(`rename ${paths[i]}\t${item.code}\tsuccess`);
-                  } else {
-                    core.info(`rename ${paths[i]}\t${item.code}\t${item.data.error}`);
-                  }
-                });
+                reject(respBody.filter(item => item !== 200))
               } else {
                 reject({
-                  deleteusCode: respInfo.deleteusCode,
+                  respInfo,
                   respBody
                 })
               }
-              resolve(paths.map(([ src, dest ]) => (`${src} => ${dest}`)))
+              resolve()
             }
           })
         })
       }));
 
-      sendReq(moveOperations, REQ_MAX_COUNT,(err, res) => {
-        if (isNonEmptyArray(res)) {
-          core.info(`${stringify(res)} \n are moved successfully`)
-        }
+      sendReq(moveOperations, REQ_MAX_COUNT,(err) => {
         if (isNonEmptyArray(err)) {
-          core.error(`There are some files that moved failed，please manually moved them again:\n${stringify(err)}`)
+          core.error(`Something is wrong :\n${stringify(err)}`)
+        } else {
+          core.info('All are moved successfully')
         }  
       })
     }
