@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint src/index.js",
     "package": "ncc -m build ./src/index.js -o dist",
-    "test": "git tag -d test && git tag test && git push origin test -f",
+    "test": "git tag -d run-test && git tag run-test && git push origin run-test -f",
     "test-fw": "npm run package && git add . && git commit -m 'test-fw' && git push && npm run test"
   },
   "repository": {

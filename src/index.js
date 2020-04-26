@@ -54,6 +54,7 @@ async function main() {
   try {
     run()
   } catch (error) {
+    console.log(error)
     core.setFailed(1)
   }
 }
