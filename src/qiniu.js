@@ -105,12 +105,11 @@ class Qiniu {
         return this.uploadFile(key, path).then(() => (key))
       }))
 
-      sendReq(https, REQ_MAX_COUNT, (err, res) => {
-        if (isNonEmptyArray(res)) {
-          core.info(`${stringify(res)} \n are uploaded successfully`)
-        }
+      sendReq(https, REQ_MAX_COUNT, (err) => {
         if (isNonEmptyArray(err)) {
-          core.error(`There are some files that upload failed，please manually upload them again:\n${stringify(err)}`)
+          core.error(`Something is wrong :\n${stringify(err)}`)
+        } else {
+          core.info('All are deleted successfully')
         }
       })
     }
@@ -134,14 +133,25 @@ class Qiniu {
                 } else {
                   // 200 is success, 298 is part success
                   if (parseInt(respInfo.statusCode / 100) == 2) {
-                    reject(respBody.filter(item => item !== 200))
+                    let res = respBody.filter((item, i) => {
+                      if (item.code !== 200) {
+                        item.file = paths[i]
+                        return true
+                      } else {
+                        return false
+                      }
+                    })
+                    if (res.length !== 0) {
+                      reject(res)
+                    } else {
+                      resolve()
+                    }
                   } else {
                     reject({
                       respInfo,
                       respBody
                     })
                   }
-                  resolve()
                 }
               });
             })
@@ -178,7 +188,19 @@ class Qiniu {
             } else {
               // 200 is success, 298 is part success
               if (parseInt(respInfo.statusCode / 100) == 2) {
-                reject(respBody.filter(item => item !== 200))
+                let res = respBody.filter((item, i) => {
+                  if (item.code !== 200) {
+                    item.file = paths[i].src
+                    return true
+                  } else {
+                    return false
+                  }
+                })
+                if (res.length !== 0) {
+                  reject(res)
+                } else {
+                  resolve()
+                }
               } else {
                 reject({
                   respInfo,
@@ -216,13 +238,12 @@ class Qiniu {
         return path
       }))
 
-      sendReq(upOperations, REQ_MAX_COUNT, (err, res) => {
-        if (isNonEmptyArray(res)) {
-          core.info(`${stringify(res)} \n are updated successfully`)
-        }
+      sendReq(upOperations, REQ_MAX_COUNT, (err) => {
         if (isNonEmptyArray(err)) {
-          core.error(`There are some files that update failed，please manually update them again:\n${stringify(err)}`)
-        }  
+          core.error(`Something is wrong :\n${stringify(err)}`)
+        } else{
+          core.info('All are updated successfully') 
+        }
       })
     }
 }
