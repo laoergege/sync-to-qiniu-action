@@ -21,6 +21,8 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
         echo 123 > ./demo/test.txt
+        git config --global user.email "test@qq.com"
+        git config --global user.name "laoergege"
         git add .
         git commit -m "add test.txt"
         git push
@@ -42,6 +44,8 @@ jobs:
     - if: hashFiles('./demo/test.txt')
       run: |
         echo 456 >> ./demo/test.txt
+        git config --global user.email "test@qq.com"
+        git config --global user.name "laoergege"
         git add .
         git commit -m "change test.txt"
         git push
@@ -63,6 +67,8 @@ jobs:
     - if: hashFiles('./demo/test.txt')
       run: |
         echo ./demo/test.txt ./demo/Test.txt
+        git config --global user.email "test@qq.com"
+        git config --global user.name "laoergege"
         git add .
         git commit -m "move test.txt to Test.txt"
         git push
@@ -83,6 +89,8 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
         rm -f ./demo/Test.txt
+        git config --global user.email "test@qq.com"
+        git config --global user.name "laoergege"
         git add .
         git commit -m "move test.txt to Test.txt"
         git push
