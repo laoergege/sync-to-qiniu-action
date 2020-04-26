@@ -1,7 +1,7 @@
 name: Test
 on:
   push:
-    tags:
+    branchs:
       - test
 
 jobs:
@@ -21,6 +21,9 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
         echo 123 > ./demo/test.txt
+        git add .
+        git commit -m "add test.txt"
+        git push
   modify:
     needs: add
     runs-on: ubuntu-latest
@@ -36,8 +39,12 @@ jobs:
         zone: 'Zone_z2'
         path: demo
         token: ${{ secrets.GITHUB_TOKEN }}
-    - run: |
+    - if: hashFiles('./demo/test.txt')
+      run: |
         echo 456 >> ./demo/test.txt
+        git add .
+        git commit -m "change test.txt"
+        git push
   move:
     needs: modify
     runs-on: ubuntu-latest
@@ -53,8 +60,12 @@ jobs:
         zone: 'Zone_z2'
         path: demo
         token: ${{ secrets.GITHUB_TOKEN }}
-    - run: |
+    - if: hashFiles('./demo/test.txt')
+      run: |
         echo ./demo/test.txt ./demo/Test.txt
+        git add .
+        git commit -m "move test.txt to Test.txt"
+        git push
   delete:
     needs: move
     runs-on: ubuntu-latest
@@ -72,3 +83,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: |
         rm -f ./demo/Test.txt
+        git add .
+        git commit -m "move test.txt to Test.txt"
+        git push
