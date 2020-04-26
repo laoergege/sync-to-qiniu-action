@@ -71,7 +71,7 @@ jobs:
       run: |
         git config --global user.email "test@qq.com"
         git config --global user.name "laoergege"
-        echo ./demo/test.txt ./demo/Test.txt
+        mv ./demo/test.txt ./demo/Test.txt
         git add .
         git commit -m "move test.txt to Test.txt"
         git push
