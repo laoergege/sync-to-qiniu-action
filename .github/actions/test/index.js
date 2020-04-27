@@ -38,7 +38,7 @@ async function main() {
 
 (async () => {
     try {
-        run()
+        main()
     } catch (error) {
         core.setFailed(1)
     }
