@@ -24,7 +24,7 @@ jobs:
         git config --global user.email "test@qq.com"
         git config --global user.name "laoergege"
         git rm 'demo/**'
-        git commit -m "delete Test.txt"
+        git commit -m "delete deme/**"
         git push
   add:
     runs-on: ubuntu-latest
@@ -45,6 +45,7 @@ jobs:
     - run: |
         git config --global user.email "test@qq.com"
         git config --global user.name "laoergege"
+        mkdir -p demo
         echo 123 > ./demo/test.txt
         git add .
         git commit -m "add test.txt"
