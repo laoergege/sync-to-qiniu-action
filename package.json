@@ -6,7 +6,8 @@
   "main": "./dist/index.js",
   "scripts": {
     "lint": "eslint src/index.js",
-    "package": "ncc -m build ./src/index.js -o dist",
+    "build": "ncc -m build ./src/index.js -o dist",
+    "build:test": "ncc -m build ./.github/actions/test/index.js -o ./.github/actions/test/dist",
     "test": "git tag -d run-test && git tag run-test && git push origin run-test -f"
   },
   "repository": {
@@ -23,7 +24,9 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.3",
+    "@actions/exec": "^1.0.3",
     "@actions/github": "^2.1.1",
+    "@actions/io": "^1.0.2",
     "dayjs": "^1.8.24",
     "qiniu": "^7.3.0",
     "simple-git": "^1.132.0"
