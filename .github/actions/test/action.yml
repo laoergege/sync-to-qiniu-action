@@ -1,0 +1,28 @@
+name: 'test'
+inputs:
+  accessKey:
+    description: 'qiniu accessKey'
+    required: true
+  secretKey: 
+    description: 'qiniu secretKey'
+    required: true
+  bucket:
+    description: 'qiniu bucket'
+    required: true
+  zone:
+    description: 'bucket zone'
+    required: true
+  path:
+    description: 'the path under files you want to upload'
+    required: true
+  token:
+    default: 'a token with access to your repository scoped in as a secret'
+    required: true
+  fsizeLimit:
+    description: 'maximum upload file size limit(byte)'
+    default: 5 * 1024 * 1024 #默认 5M
+  mimeLimit:
+    description: 'File MimeType'
+runs:
+  using: 'node12'
+  main: '.github/actions/test/dist/index.js'
