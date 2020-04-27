@@ -25,4 +25,4 @@ inputs:
     description: 'File MimeType'
 runs:
   using: 'node12'
-  main: '.github/actions/test/dist/index.js'
+  main: 'dist/index.js'
