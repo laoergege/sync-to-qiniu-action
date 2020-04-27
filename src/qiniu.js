@@ -68,9 +68,9 @@ class Qiniu {
                   reject(respErr);
                 }
                 if (respInfo.statusCode == 200) {
-                  resolve({ respBody, respInfo });
+                  resolve({ file: key, respBody, respInfo });
                 } else {
-                  reject({ respBody, respInfo });
+                  reject({ file: key, respBody, respInfo });
                 }
             });
         })
@@ -86,7 +86,7 @@ class Qiniu {
           if (err) {
             reject(err)
           } else {
-            resolve({ respBody, respInfo })
+            resolve({ file: path, respBody, respInfo })
           }
         });
       })
@@ -107,7 +107,7 @@ class Qiniu {
 
       sendReq(https, REQ_MAX_COUNT, (err) => {
         if (isNonEmptyArray(err)) {
-          core.error(`Something is wrong :\n${stringify(err)}`)
+          core.error(`Something is wrong:\n${stringify(err)}`)
         } else {
           core.info('All are deleted successfully')
         }
@@ -159,7 +159,7 @@ class Qiniu {
 
         sendReq(deleteOperations, REQ_MAX_COUNT, (err) => {
           if (isNonEmptyArray(err)) {
-            core.error(`Something is wrong :\n${stringify(err)}`)
+            core.error(`Something is wrong:\n${stringify(err)}`)
           } else {
             core.info('All are deleted successfully')
           }
@@ -215,7 +215,7 @@ class Qiniu {
 
       sendReq(moveOperations, REQ_MAX_COUNT,(err) => {
         if (isNonEmptyArray(err)) {
-          core.error(`Something is wrong :\n${stringify(err)}`)
+          core.error(`Something is wrong:\n${stringify(err)}`)
         } else {
           core.info('All are moved successfully')
         }  
@@ -240,7 +240,7 @@ class Qiniu {
 
       sendReq(upOperations, REQ_MAX_COUNT, (err) => {
         if (isNonEmptyArray(err)) {
-          core.error(`Something is wrong :\n${stringify(err)}`)
+          core.error(`Something is wrong:\n${stringify(err)}`)
         } else{
           core.info('All are updated successfully') 
         }
