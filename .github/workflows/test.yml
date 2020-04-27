@@ -96,5 +96,5 @@ jobs:
         git config --global user.name "laoergege"
         rm -f ./demo/Test.txt
         git add .
-        git commit -m "move test.txt to Test.txt"
+        git commit -m "delete Test.txt"
         git push
