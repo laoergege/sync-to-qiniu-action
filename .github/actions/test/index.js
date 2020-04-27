@@ -4,7 +4,7 @@ const action = require('../../../src/action')
 const io = require('@actions/io');
 
 async function commit(msg) {
-    await exec.exec("git add -- 'demo/**'");
+    await exec.exec("git add .");
     await exec.exec(`git commit -m '${msg}'`);
     await exec.exec('git push');
 }
@@ -16,6 +16,8 @@ async function main() {
     console.log(await exec.exec('pwd'))
 
     await io.mkdirP('demo');   
+
+    console.log(await exec.exec('ls'))
 
     // add
     await exec.exec('echo 123 > demo/test.txt');
