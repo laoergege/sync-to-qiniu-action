@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
-const action = require('./src/action')
+const action = require('../../../src/action')
 const io = require('@actions/io');
 
 async function commit(msg) {
