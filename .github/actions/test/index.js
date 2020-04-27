@@ -13,6 +13,8 @@ async function main() {
     await exec.exec('git config --global user.email "test@qq.com"');
     await exec.exec('git config --global user.name "laoergege"');
 
+    console.log(await exec.exec('pwd'))
+
     await io.mkdirP('demo');   
 
     // add
