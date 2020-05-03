@@ -1,10 +1,10 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
-const action = require('./src/action')
+const action = require('../../../src/action')
 const io = require('@actions/io');
 
 async function commit(msg) {
-    await exec.exec("git add -- 'demo/**'");
+    await exec.exec("git add .");
     await exec.exec(`git commit -m '${msg}'`);
     await exec.exec('git push');
 }
@@ -13,7 +13,11 @@ async function main() {
     await exec.exec('git config --global user.email "test@qq.com"');
     await exec.exec('git config --global user.name "laoergege"');
 
+    console.log(await exec.exec('pwd'))
+
     await io.mkdirP('demo');   
+
+    console.log(await exec.exec('ls'))
 
     // add
     await exec.exec('echo 123 > demo/test.txt');
@@ -38,7 +42,7 @@ async function main() {
 
 (async () => {
     try {
-        run()
+        main()
     } catch (error) {
         core.setFailed(1)
     }
