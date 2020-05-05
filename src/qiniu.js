@@ -109,7 +109,7 @@ class Qiniu {
         if (isNonEmptyArray(err)) {
           core.error(`Something is wrong:\n${stringify(err)}`)
         } else {
-          core.info('All are deleted successfully')
+          core.info('All are uploaded successfully')
         }
       })
     }
