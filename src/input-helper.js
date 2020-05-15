@@ -18,7 +18,7 @@ function getInput() {
         secretKey: core.getInput('secretKey'),
         bucket: core.getInput('bucket'),
         zone: core.getInput('zone'),
-        path: core.getInput('path'),
+        path: core.getInput('path').replace(/^(\.|\.\.)?\//, ''),
         fsizeLimit: core.getInput('fsizeLimit'),
         mimeLimit: core.getInput('mimeLimit'),
         token: core.getInput('token'), 

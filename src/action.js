@@ -7,7 +7,7 @@ const { getInput, getWorkspace } = require('./input-helper')
 async function run() {
   const githubWorkspacePath = getWorkspace()
 
-  const { accessKey, secretKey, bucket, zone,
+  const { accessKey, secretKey, bucket, zone, path,
     fsizeLimit, mimeLimit } = getInput()
 
   const policy = {
@@ -38,16 +38,16 @@ async function run() {
   }
 
   const adds = op.A
-  qiniu.batchUploadFiles(adds.map(([p]) => ([p, path.resolve(githubWorkspacePath, p)])))
+  qiniu.batchUploadFiles(adds.map(([p]) => ([p.replace(path, ''), path.resolve(githubWorkspacePath, p)])))
 
   const dels = op.D
-  qiniu.batchDelFiles(dels.map(([path]) => (path)))
+  qiniu.batchDelFiles(dels.map(([path]) => (path.replace(path, ''))))
 
   const renames = op.R
-  qiniu.batchMVFiles(renames)
+  qiniu.batchMVFiles(renames.map(([o, d]) => ([o.replace(path, ''), d.replace(path, '')])))
 
   const modifies = op.M
-  qiniu.batchUpFiles(modifies.map(([path]) => (path)))
+  qiniu.batchUpFiles(modifies.map(([path]) => (path.replace(path, ''))))
 }
 
 async function main() {
