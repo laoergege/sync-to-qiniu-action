@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with: 
-        token: ${{ secrets.token }}
+        token: ${{ secrets.GITHUB_TOKEN }}
     - uses: ./.github/actions/test
       with:
         accessKey: ${{ secrets.accessKey }}
